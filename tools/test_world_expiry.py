@@ -60,9 +60,9 @@ FEED_B = make_zip({
 FEED_C = make_zip({'stops.txt': 'stop_id\n1\n'})
 
 
-def cat_row(fid, url, country='JP'):
+def cat_row(fid, url, country='JP', status=''):
     return {'id': fid, 'urls.latest': url, 'location.country_code': country, 'location.subdivision_name': 'S',
-            'provider': 'Prov', 'name': 'Name'}
+            'provider': 'Prov', 'name': 'Name', 'status': status}
 
 
 class TestRangeFile(unittest.TestCase):
@@ -141,12 +141,12 @@ class TestDates(unittest.TestCase):
 
 class TestProcessFeed(unittest.TestCase):
     def test_feed_a(self):
-        r = wx.process_feed(cat_row('mdb-1', 'a'), AS_OF, opener_for(FEED_A))
+        r = wx.process_feed(cat_row('mdb-1', 'a', status=' inactive '), AS_OF, opener_for(FEED_A))
         self.assertEqual(r['result'], 'ok', r['error'])
         self.assertEqual((r['first_date'], r['last_date'], r['services'], r['tail_cut'], r['feed_end_date']),
                          (D(2026, 1, 5), D(2026, 1, 25), 3, 0, D(2026, 1, 31)))
-        self.assertEqual((r['days_left'], r['class'], r['end_md'], r['source'], r['ranged']),
-                         (-270, 'expired', '01-25', 'mdb', 'yes'))
+        self.assertEqual((r['days_left'], r['class'], r['end_md'], r['source'], r['ranged'], r['status']),
+                         (-270, 'expired', '01-25', 'mdb', 'yes', 'inactive'))
         self.assertEqual(r['zip_bytes'], len(FEED_A))
         self.assertGreater(r['requests'], 1)
 
@@ -208,6 +208,7 @@ class TestSummary(unittest.TestCase):
         self.assertEqual((src['mdb']['feeds'], src['mdb']['ok'], src['mdb']['expired']), (4, 3, 1))
         self.assertEqual(self.s['by_country']['JP']['expired_share'], 0.25)
         self.assertEqual(self.s['by_country']['US']['expired_share'], 0.5)
+        self.assertEqual(list(self.s['by_status']), ['??'])   # rows without a status
 
     def test_end_days(self):
         self.assertEqual(self.s['end_days']['all'], {'n': 5, 'top': [['03-31', 2, 0.4], ['12-31', 2, 0.4],
@@ -219,6 +220,12 @@ class TestSummary(unittest.TestCase):
         got = {k: (v['value'], v['held']) for k, v in p.items()}
         self.assertEqual(got, {'W1': (0.4, True), 'W2': (0.5, False), 'W3': (0.25, False), 'W4': ('03-31 0.4', False),
                                'W5': (0.6667, True), 'W6': (0.5, False)})
+
+    def test_untestable(self):
+        # No tfs- rows: W2 has no value and is reported as not tested, not as a miss.
+        s = wx.summarise([r for r in ROWS if r['source'] != 'tfs'], AS_OF, predictions='W')
+        self.assertEqual((s['predictions']['W2']['value'], s['predictions']['W2']['held']), (None, None))
+        self.assertIn('Result: none, could not be tested.', wx.report(s))
 
     def test_fisher(self):
         self.assertEqual(wx.fisher_greater(2, 1, 1, 2), 0.5)
@@ -233,6 +240,58 @@ class TestSummary(unittest.TestCase):
         self.assertIn('Result: p = 0.5, did not hold.', md)
         self.assertIn('Result: 03-31 0.4, did not hold.', md)
         self.assertIn('Result: 40.0%, held.', md)
+        self.assertIn('with catalog status active.', md)
+
+
+def fx(country, status, result='ok', cls='', days=None, fe=None):
+    return {'country': country, 'source': 'mdb', 'status': status, 'result': result, 'class': cls, 'end_md': '',
+            'days_left': days, 'feed_end_date': fe, 'ranged': 'yes', 'bytes_read': 10, 'zip_bytes': 100}
+
+
+# 10 feeds, 9 read. Expired: rows 1, 2 (inactive, both over a year) and 5 (active) = 3 of 9 = 0.3333 (X2 fails).
+# inactive: 3 feeds, 3 read, 2 expired -> 0.6667 (X1 fails); read share 3/3 = 1.0 (X5 holds).
+# X3: days since end 400 and 500 -> median 450.0 (holds, > 365).
+# X4: US read rows 1, 2, 3, 5, 6 = 5, expired 3; JP read rows 7-10 = 4, expired 0. Fisher(3,2,0,4): n1=5, n2=4,
+#   k=3, C(9,3)=84; x=3 only: C(5,3)C(4,0)=10 -> 10/84 = 0.119047.. -> 0.119048 (fails).
+# X6: expired with feed_end_date: row 2 (2026-12-31, on or after the as-of) and row 5 (2026-10-20) -> 1/2 = 0.5 (fails).
+XROWS = [fx('US', 'inactive', cls='expired_over_1y', days=-400),
+         fx('US', 'inactive', cls='expired_over_1y', days=-500, fe=D(2026, 12, 31)),
+         fx('US', 'inactive', cls='ends_within_1y', days=50),
+         fx('US', 'active', result='http_404'),
+         fx('US', 'active', cls='expired', days=-2, fe=D(2026, 10, 20)),
+         fx('US', 'active', cls='ends_within_1y', days=100),
+         fx('JP', 'active', cls='ends_within_1y', days=160), fx('JP', 'active', cls='ends_within_1y', days=160),
+         fx('JP', 'active', cls='ends_within_30d', days=10),
+         fx('JP', 'future', cls='ends_within_1y', days=200)]
+
+
+class TestSummaryX(unittest.TestCase):
+    def setUp(self):
+        self.s = wx.summarise(XROWS, AS_OF, {'active': 6, 'inactive': 3, 'future': 1}, predictions='X',
+                              statuses=('active', 'inactive', 'future'))
+
+    def test_by_status(self):
+        st = self.s['by_status']
+        self.assertEqual(sorted(st), ['active', 'future', 'inactive'])
+        self.assertEqual((st['inactive']['feeds'], st['inactive']['ok'], st['inactive']['expired'],
+                          st['inactive']['expired_share']), (3, 3, 2, 0.6667))
+        self.assertEqual((st['active']['feeds'], st['active']['ok'], st['active']['expired'],
+                          st['active']['expired_share']), (6, 5, 1, 0.2))
+        self.assertEqual(self.s['overall']['expired_share'], 0.3333)
+        self.assertEqual(self.s['statuses'], ['active', 'inactive', 'future'])
+
+    def test_predictions_x(self):
+        got = {k: (v['value'], v['held']) for k, v in self.s['predictions'].items()}
+        self.assertEqual(got, {'X1': (0.6667, False), 'X2': (0.3333, False), 'X3': (450.0, True),
+                               'X4': (0.119048, False), 'X5': (1.0, True), 'X6': (0.5, False)})
+
+    def test_report_x(self):
+        md = wx.report(self.s)
+        self.assertIn('with catalog status active, inactive, future.', md)
+        self.assertIn('| inactive | 3 | 3 | 2 | 66.7% | 2 | 0 | 1 | 0 |', md)
+        self.assertIn('Result: 450 days, held.', md)
+        self.assertIn('Result: p = 0.119, did not hold.', md)
+        self.assertIn('Result: 100.0%, held.', md)
 
 
 class TestCatalogRunWrite(unittest.TestCase):
@@ -247,30 +306,37 @@ class TestCatalogRunWrite(unittest.TestCase):
                 w.writerow(['mdb-2', 'gtfs', 'inactive', 'b', 'US', 'P', 'N'])
                 w.writerow(['mdb-3', 'gtfs_rt', 'active', '', 'US', 'P', 'N'])
                 w.writerow(['mdb-4', 'gtfs', '', 'c', 'US', 'P', 'N'])
+                w.writerow(['mdb-5', 'gtfs', 'deprecated', 'd', 'US', 'P', 'N'])
             rows, status = wx.load_catalog(path)
+            rows2, _ = wx.load_catalog(path, ('active', 'inactive', 'future'))
         self.assertEqual([r['id'] for r in rows], ['mdb-1'])
-        self.assertEqual(status, {'active': 1, 'inactive': 1, '(blank)': 1})
+        self.assertEqual([r['id'] for r in rows2], ['mdb-1', 'mdb-2'])
+        self.assertEqual(status, {'active': 1, 'inactive': 1, '(blank)': 1, 'deprecated': 1})
 
     def test_run_and_write(self):
         zips = {'a': FEED_A, 'b': FEED_B}
 
         def opener(url):
             return opener_for(zips[url])(url)
-        cat = [cat_row('mdb-1', 'a', 'US'), cat_row('jbda-2', 'b'), cat_row('tfs-3', '', 'FR')]
+        cat = [cat_row('mdb-1', 'a', 'US', 'inactive'), cat_row('jbda-2', 'b', status='active'),
+               cat_row('tfs-3', '', 'FR')]
         log = io.StringIO()
         rows = wx.run(cat, AS_OF, workers=2, pause=0, opener=opener, log=log)
         self.assertEqual([(r['id'], r['result']) for r in rows],
                          [('mdb-1', 'ok'), ('jbda-2', 'ok'), ('tfs-3', 'no_latest')])
         self.assertIn('3/3 feeds', log.getvalue())
-        s = wx.summarise(rows, AS_OF, predictions=True)
+        s = wx.summarise(rows, AS_OF, predictions='X', statuses=('active', 'inactive'))
+        # inactive mdb-1 expired 270 days ago: X1 1.0, X3 270.0; feed_end 2026-01-31 is before the as-of: X6 0.0.
+        self.assertEqual((s['predictions']['X1']['value'], s['predictions']['X3']['value'],
+                          s['predictions']['X6']['value']), (1.0, 270.0, 0.0))
         with tempfile.TemporaryDirectory() as tmp:
             wx.write_outputs(rows, s, tmp)
             with open(os.path.join(tmp, 'feeds.csv'), encoding='utf-8-sig', newline='') as f:
                 out = list(csv.DictReader(f))
             self.assertEqual(list(out[0].keys()), wx.FEED_COLUMNS)
             self.assertEqual([r['id'] for r in out], ['jbda-2', 'mdb-1', 'tfs-3'])
-            self.assertEqual((out[1]['last_date'], out[1]['days_left'], out[1]['class']),
-                             ('2026-01-25', '-270', 'expired'))
+            self.assertEqual((out[1]['last_date'], out[1]['days_left'], out[1]['class'], out[1]['status']),
+                             ('2026-01-25', '-270', 'expired', 'inactive'))
             self.assertEqual(out[2]['last_date'], '')
             with open(os.path.join(tmp, 'by_country.csv'), encoding='utf-8-sig', newline='') as f:
                 bc = list(csv.reader(f))

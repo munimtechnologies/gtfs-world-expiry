@@ -1,9 +1,11 @@
-# world_expiry.py - for every active GTFS Schedule feed in the Mobility Database catalog (feeds_v2.csv), reads the
-# calendar of its latest dataset (the catalog's urls.latest mirror) and finds the last date on which any service runs,
-# then counts, overall, by country and by catalog source, how many feeds have no service left on the as-of date.
+# world_expiry.py - for every GTFS Schedule feed in the Mobility Database catalog (feeds_v2.csv) with a chosen catalog
+# status (active by default; --statuses active,inactive,future for the full census), reads the calendar of its latest
+# dataset (the catalog's urls.latest mirror) and finds the last date on which any service runs, then counts, overall,
+# by catalog status, by country and by catalog source, how many feeds have no service left on the as-of date.
 # Only calendar.txt, calendar_dates.txt and feed_info.txt are read, through HTTP range requests on the zip, so a
-# feed costs a few small requests instead of a full download. Predictions W1-W6 (predictions-2026-10-23.md) were
-# fixed before any dataset was read and are scored with --predictions.
+# feed costs a few small requests instead of a full download. Predictions W1-W6 (predictions-2026-10-23.md, active
+# feeds) and X1-X6 (predictions-v2-2026-10-23.md, all statuses but deprecated and development) were fixed before the
+# datasets they score were read; --predictions W or --predictions X scores them.
 # Standard library only. MV2 of Munim, Inc. - Apache-2.0 license. Made with AI agents working in MV2's name.
 import argparse
 import collections
@@ -15,13 +17,14 @@ import json
 import math
 import os
 import re
+import statistics
 import sys
 import time
 import urllib.error
 import urllib.request
 import zipfile
 
-UA = 'gtfs-world-expiry/0.1 (MV2 of Munim, Inc.; mv2@munimtech.com)'
+UA = 'gtfs-world-expiry/0.2 (MV2 of Munim, Inc.; mv2@munimtech.com)'
 TAIL = 65536                  # first request: the last 64 KiB of the zip (end record and, usually, the directory)
 MAX_AHEAD = 8 << 20           # sequential reads double up to 8 MiB per request
 MAX_FULL = 64 << 20           # a server that ignores Range: read the whole zip only up to 64 MiB
@@ -31,9 +34,9 @@ ONE_DAY = dt.timedelta(days=1)
 WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 EXPIRED = ('expired_over_1y', 'expired')
 CURRENT = ('ends_within_30d', 'ends_within_1y')
-FEED_COLUMNS = ['id', 'country', 'subdivision', 'provider', 'name', 'source', 'result', 'error', 'zip_bytes',
-                'ranged', 'requests', 'bytes_read', 'services', 'first_date', 'last_date', 'feed_end_date',
-                'days_left', 'class', 'end_md', 'tail_cut']
+FEED_COLUMNS = ['id', 'country', 'subdivision', 'provider', 'name', 'source', 'status', 'result', 'error',
+                'zip_bytes', 'ranged', 'requests', 'bytes_read', 'services', 'first_date', 'last_date',
+                'feed_end_date', 'days_left', 'class', 'end_md', 'tail_cut']
 COUNT_KEYS = ['feeds', 'ok', 'expired', 'expired_over_1y', 'ends_within_30d', 'ends_within_1y', 'ends_1_2y',
               'ends_after_2y', 'expired_share']
 
@@ -49,6 +52,20 @@ PREDICTIONS = {
     'W5': 'Among Japanese feeds whose service ends within a year, at least 25% end on 03-31 (the end of the fiscal '
           'year).',
     'W6': 'In the United States (country US) between 8% and 30% of the feeds read are expired.',
+}
+
+# Fixed on 2026-10-23 after the first census (active feeds only) and before any inactive or future dataset was read
+# (predictions-v2-2026-10-23.md). Same definitions; the census covers statuses active, inactive and future.
+PREDICTIONS_X = {
+    'X1': 'Of the feeds the catalog marks inactive that are read, at least 90% have no service left on the as-of '
+          'date by their own calendar (the calendar agrees with the catalog status).',
+    'X2': 'Of all feeds read (active, inactive and future), between 12% and 25% are expired.',
+    'X3': 'Among expired inactive feeds, the median time since the last service date is more than 365 days.',
+    'X4': 'Feeds in the United States are expired more often than feeds in Japan (one-sided Fisher exact test, '
+          'p < 0.05).',
+    'X5': 'At least 80% of the inactive feeds can be read (the catalog still serves a dataset with service dates).',
+    'X6': 'Among expired feeds read that have a feed_info feed_end_date, at most 20% give a feed_end_date on or '
+          'after the as-of date (feed_info still claiming validity after the last service day).',
 }
 
 
@@ -315,9 +332,9 @@ def process_feed(row, as_of, opener=open_remote):
     out = {'id': fid, 'country': row.get('location.country_code', '') or '',
            'subdivision': (row.get('location.subdivision_name', '') or '')[:60],
            'provider': (row.get('provider', '') or '')[:120], 'name': (row.get('name', '') or '')[:120],
-           'source': source_of(fid), 'result': '', 'error': '', 'zip_bytes': None, 'ranged': '', 'requests': 0,
-           'bytes_read': 0, 'services': None, 'first_date': None, 'last_date': None, 'feed_end_date': None,
-           'days_left': None, 'class': '', 'end_md': '', 'tail_cut': None}
+           'source': source_of(fid), 'status': (row.get('status') or '').strip(), 'result': '', 'error': '',
+           'zip_bytes': None, 'ranged': '', 'requests': 0, 'bytes_read': 0, 'services': None, 'first_date': None,
+           'last_date': None, 'feed_end_date': None, 'days_left': None, 'class': '', 'end_md': '', 'tail_cut': None}
     url = (row.get('urls.latest') or '').strip()
     if not url:
         out['result'] = 'no_latest'
@@ -387,8 +404,13 @@ def fisher_greater(a, b, c, d):
 def group_by(rs, key):
     g = collections.defaultdict(list)
     for r in rs:
-        g[r[key] or '??'].append(r)
+        g[r.get(key) or '??'].append(r)
     return g
+
+
+def scored(texts, vals):
+    """{key: {text, value, held}}; held is None (could not be tested) when the value is None."""
+    return {k: {'text': texts[k], 'value': v, 'held': None if v is None else bool(h)} for k, (v, h) in vals.items()}
 
 
 def score(s, rows):
@@ -409,20 +431,46 @@ def score(s, rows):
             'W4': (f'{w4[0]} {w4[1]}', w4[0] == '12-31' and w4[1] is not None and w4[1] >= 0.10),
             'W5': (w5, w5 is not None and w5 >= 0.25),
             'W6': (eu, eu is not None and 0.08 <= eu <= 0.30)}
-    return {k: {'text': PREDICTIONS[k], 'value': v, 'held': h} for k, (v, h) in vals.items()}
+    return scored(PREDICTIONS, vals)
 
 
-def summarise(rows, as_of, catalog_status=None, predictions=False):
-    s = {'as_of': as_of.isoformat(), 'catalog_status': catalog_status or {},
+def score_x(s, rows, as_of):
+    o, st, ctry = s['overall'], s['by_status'], s['by_country']
+    ina, jp, us = st.get('inactive'), ctry.get('JP'), ctry.get('US')
+    x1 = ina['expired_share'] if ina else None
+    x2 = o['expired_share']
+    gone = [-r['days_left'] for r in rows
+            if r.get('status') == 'inactive' and r['result'] == 'ok' and r['class'] in EXPIRED]
+    x3 = float(statistics.median(gone)) if gone else None
+    x4 = (fisher_greater(us['expired'], us['ok'] - us['expired'], jp['expired'], jp['ok'] - jp['expired'])
+          if us and jp else None)
+    x5 = share(ina['ok'], ina['feeds']) if ina else None
+    fe = [r['feed_end_date'] for r in rows
+          if r['result'] == 'ok' and r['class'] in EXPIRED and r.get('feed_end_date') is not None]
+    x6 = share(sum(d >= as_of for d in fe), len(fe))
+    vals = {'X1': (x1, x1 is not None and x1 >= 0.90),
+            'X2': (x2, x2 is not None and 0.12 <= x2 <= 0.25),
+            'X3': (x3, x3 is not None and x3 > 365),
+            'X4': (x4, x4 is not None and x4 < 0.05),
+            'X5': (x5, x5 is not None and x5 >= 0.80),
+            'X6': (x6, x6 is not None and x6 <= 0.20)}
+    return scored(PREDICTIONS_X, vals)
+
+
+def summarise(rows, as_of, catalog_status=None, predictions=False, statuses=('active',)):
+    s = {'as_of': as_of.isoformat(), 'statuses': list(statuses), 'catalog_status': catalog_status or {},
          'results': dict(collections.Counter(r['result'] for r in rows).most_common()),
          'overall': counts(rows),
+         'by_status': {k: counts(v) for k, v in sorted(group_by(rows, 'status').items())},
          'by_source': {k: counts(v) for k, v in sorted(group_by(rows, 'source').items())},
          'by_country': {k: counts(v) for k, v in sorted(group_by(rows, 'country').items())},
          'end_days': {'all': end_days(rows), 'JP': end_days([r for r in rows if r['country'] == 'JP']),
                       'US': end_days([r for r in rows if r['country'] == 'US'])},
          'ranged': dict(collections.Counter(r['ranged'] for r in rows if r['ranged'])),
          'bytes_read': sum(r['bytes_read'] for r in rows), 'zip_bytes': sum(r['zip_bytes'] or 0 for r in rows)}
-    if predictions:
+    if predictions == 'X':
+        s['predictions'] = score_x(s, rows, as_of)
+    elif predictions:
         s['predictions'] = score(s, rows)
     s['generated_at'] = dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     s['by'] = "MV2 of Munim, Inc. (made with AI agents working in MV2's name)"
@@ -433,25 +481,41 @@ def pct(x):
     return '' if x is None else f'{100 * x:.1f}%'
 
 
+def shown(k, v):
+    if v is None:
+        return 'none'
+    if isinstance(v, str):
+        return v
+    if k in ('W2', 'X4'):
+        return f'p = {v:.3g}'
+    if k == 'X3':
+        return f'{v:.0f} days'
+    return pct(v)
+
+
 def count_row(name, c):
     return (f'| {name} | {c["feeds"]} | {c["ok"]} | {c["expired"]} | {pct(c["expired_share"])} | '
             f'{c["expired_over_1y"]} | {c["ends_within_30d"]} | {c["ends_within_1y"]} | '
             f'{c["ends_1_2y"] + c["ends_after_2y"]} |')
 
 
-COUNT_HEAD = ['| group | active feeds | read | expired | expired share | expired over 1 year | ends within 30 days | '
+COUNT_HEAD = ['| group | feeds | read | expired | expired share | expired over 1 year | ends within 30 days | '
               'ends in 30 days to 1 year | ends after 1 year |', '|---|---|---|---|---|---|---|---|---|']
 
 
 def report(s, min_country=10):
-    lines = [f'# Active GTFS feeds with no service left, worldwide, as of {s["as_of"]}', '',
+    sts = ', '.join(s.get('statuses') or ['active'])
+    lines = [f'# GTFS feeds with no service left, worldwide, as of {s["as_of"]}', '',
              'Source: the Mobility Database catalog (feeds_v2.csv, CC0) and the latest dataset it mirrors for each '
-             'active GTFS Schedule feed. A feed is expired when the last date on which any of its services runs '
-             '(calendar.txt and calendar_dates.txt) is before the as-of date, which is one day before the UTC run '
-             'date so that it has passed in every time zone.', '', '## Overall', ''] + COUNT_HEAD
+             f'GTFS Schedule feed with catalog status {sts}. A feed is expired when the last date on which any of '
+             'its services runs (calendar.txt and calendar_dates.txt) is before the as-of date, which is one day '
+             'before the UTC run date so that it has passed in every time zone.', '', '## Overall', ''] + COUNT_HEAD
     lines.append(count_row('all', s['overall']))
     lines += ['', 'Read results: ' + ', '.join(f'{k} {v}' for k, v in s['results'].items()) + '.', '',
-              '## By catalog source (id prefix)', ''] + COUNT_HEAD
+              '## By catalog status', ''] + COUNT_HEAD
+    for k, c in sorted(s.get('by_status', {}).items(), key=lambda x: -x[1]['feeds']):
+        lines.append(count_row(k, c))
+    lines += ['', '## By catalog source (id prefix)', ''] + COUNT_HEAD
     for k, c in sorted(s['by_source'].items(), key=lambda x: -x[1]['feeds']):
         lines.append(count_row(k, c))
     lines += ['', f'## By country (at least {min_country} feeds read), most expired first', ''] + COUNT_HEAD
@@ -468,15 +532,15 @@ def report(s, min_country=10):
     if 'predictions' in s:
         lines += ['', '## 事前に記録した予測 / Predictions recorded in advance', '']
         for k, p in s['predictions'].items():
-            v = p['value']
-            shown = (v if isinstance(v, str) else ('' if v is None else (f'p = {v:.3g}' if k == 'W2' else pct(v))))
-            lines.append(f'- {k}: {p["text"]} Result: {shown}, {"held" if p["held"] else "did not hold"}.')
+            verdict = {True: 'held', False: 'did not hold', None: 'could not be tested'}[p['held']]
+            lines.append(f'- {k}: {p["text"]} Result: {shown(k, p["value"])}, {verdict}.')
     lines += ['', 'Limits: the catalog\'s mirror can lag the publisher (a newer file at the publisher\'s own URL is not '
-              'seen), and a feed marked active may have been replaced by another entry. Service dates are read from '
-              'the calendar only: trips are not checked, so a service with no trips still counts, and removed dates '
-              'are checked only at the end of each calendar range (services whose last 62 days are all removed are '
-              'counted in tail_cut, not guessed). Countries are the catalog\'s. Counts are per catalog entry, not per '
-              'agency or per rider.', '',
+              'seen), and an entry may have been replaced by another. The catalog sets a feed inactive when its '
+              'latest dataset\'s service date range has ended, so a census of active feeds alone undercounts '
+              'expiry. Service dates are read from the calendar only: trips are not checked, so a service with no '
+              'trips still counts, and removed dates are checked only at the end of each calendar range (services '
+              'whose last 62 days are all removed are counted in tail_cut, not guessed). Countries are the '
+              'catalog\'s. Counts are per catalog entry, not per agency or per rider.', '',
               f'Generated {s["generated_at"]}. Made by MV2 of Munim, Inc. with AI agents working in MV2\'s name. '
               'Data CC BY 4.0; feed contents stay under their publishers\' licences and are not redistributed.']
     return '\n'.join(lines) + '\n'
@@ -490,12 +554,12 @@ def csv_value(v):
     return v
 
 
-def load_catalog(path):
+def load_catalog(path, statuses=('active',)):
     with open(path, encoding='utf-8-sig', newline='') as f:
         rows = list(csv.DictReader(f))
     gtfs = [r for r in rows if (r.get('data_type') or '').strip() == 'gtfs']
     status = dict(collections.Counter((r.get('status') or '').strip() or '(blank)' for r in gtfs).most_common())
-    return [r for r in gtfs if (r.get('status') or '').strip() == 'active'], status
+    return [r for r in gtfs if (r.get('status') or '').strip() in statuses], status
 
 
 def run(catalog_rows, as_of, workers=4, pause=0.25, opener=open_remote, log=sys.stdout):
@@ -536,26 +600,30 @@ def write_outputs(rows, s, out_dir):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description='Worldwide count of active GTFS feeds with no service left.')
+    ap = argparse.ArgumentParser(description='Worldwide count of GTFS feeds with no service left.')
     ap.add_argument('--catalog', required=True, help='Mobility Database feeds_v2.csv')
+    ap.add_argument('--statuses', default='active', help='comma-separated catalog statuses to read (default active)')
     ap.add_argument('--as-of', default='', help='YYYY-MM-DD (default: one day before today in UTC)')
     ap.add_argument('--workers', type=int, default=4)
     ap.add_argument('--pause', type=float, default=0.25, help='seconds each worker waits after a feed')
-    ap.add_argument('--limit', type=int, default=0, help='read only the first N active feeds (for a trial)')
-    ap.add_argument('--predictions', action='store_true', help='score W1-W6')
+    ap.add_argument('--limit', type=int, default=0, help='read only the first N selected feeds (for a trial)')
+    ap.add_argument('--predictions', nargs='?', const='W', choices=['W', 'X'],
+                    help='score W1-W6 (default) or X1-X6')
     ap.add_argument('--out', required=True, help='results go to <out>/<as-of>/')
     a = ap.parse_args(argv)
     csv.field_size_limit(1 << 24)
     as_of = (dt.date.fromisoformat(a.as_of) if a.as_of
              else dt.datetime.now(dt.timezone.utc).date() - ONE_DAY)
-    cat, status = load_catalog(a.catalog)
+    statuses = tuple(x.strip() for x in a.statuses.split(',') if x.strip())
+    cat, status = load_catalog(a.catalog, statuses)
     if a.limit:
         cat = cat[:a.limit]
-    print(f'{len(cat)} active GTFS feeds; catalog status counts {status}; as of {as_of}', flush=True)
+    print(f'{len(cat)} GTFS feeds with status {",".join(statuses)}; catalog status counts {status}; as of {as_of}',
+          flush=True)
     rows = run(cat, as_of, a.workers, a.pause)
-    s = summarise(rows, as_of, status, a.predictions)
+    s = summarise(rows, as_of, status, a.predictions or False, statuses)
     write_outputs(rows, s, os.path.join(a.out, as_of.isoformat()))
-    print(json.dumps({k: s[k] for k in ('as_of', 'results', 'overall', 'predictions') if k in s},
+    print(json.dumps({k: s[k] for k in ('as_of', 'results', 'overall', 'by_status', 'predictions') if k in s},
                      ensure_ascii=False))
     return s
 
