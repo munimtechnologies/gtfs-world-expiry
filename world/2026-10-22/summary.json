@@ -1,0 +1,1128 @@
+{
+ "as_of": "2026-10-22",
+ "catalog_status": {
+  "active": 2880,
+  "deprecated": 1025,
+  "inactive": 721,
+  "future": 14,
+  "development": 6
+ },
+ "results": {
+  "ok": 2800,
+  "no_latest": 55,
+  "no_service_dates": 15,
+  "no_calendar": 10
+ },
+ "overall": {
+  "feeds": 2880,
+  "ok": 2800,
+  "expired": 24,
+  "expired_over_1y": 12,
+  "ends_within_30d": 140,
+  "ends_within_1y": 2201,
+  "ends_1_2y": 245,
+  "ends_after_2y": 190,
+  "expired_share": 0.0086
+ },
+ "by_source": {
+  "jbda": {
+   "feeds": 539,
+   "ok": 537,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 13,
+   "ends_within_1y": 508,
+   "ends_1_2y": 15,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "mdb": {
+   "feeds": 1391,
+   "ok": 1344,
+   "expired": 12,
+   "expired_over_1y": 8,
+   "ends_within_30d": 96,
+   "ends_within_1y": 1000,
+   "ends_1_2y": 127,
+   "ends_after_2y": 109,
+   "expired_share": 0.0089
+  },
+  "ntd": {
+   "feeds": 84,
+   "ok": 82,
+   "expired": 1,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 42,
+   "ends_1_2y": 15,
+   "ends_after_2y": 23,
+   "expired_share": 0.0122
+  },
+  "odpt": {
+   "feeds": 41,
+   "ok": 41,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 34,
+   "ends_1_2y": 5,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "tdg": {
+   "feeds": 502,
+   "ok": 490,
+   "expired": 3,
+   "expired_over_1y": 0,
+   "ends_within_30d": 17,
+   "ends_within_1y": 418,
+   "ends_1_2y": 30,
+   "ends_after_2y": 22,
+   "expired_share": 0.0061
+  },
+  "tld": {
+   "feeds": 323,
+   "ok": 306,
+   "expired": 8,
+   "expired_over_1y": 4,
+   "ends_within_30d": 12,
+   "ends_within_1y": 199,
+   "ends_1_2y": 53,
+   "ends_after_2y": 34,
+   "expired_share": 0.0261
+  }
+ },
+ "by_country": {
+  "AE": {
+   "feeds": 1,
+   "ok": 0,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": null
+  },
+  "AL": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "AT": {
+   "feeds": 6,
+   "ok": 6,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 2,
+   "ends_within_1y": 3,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "AU": {
+   "feeds": 31,
+   "ok": 27,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 27,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "BA": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "BE": {
+   "feeds": 9,
+   "ok": 9,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 9,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "BG": {
+   "feeds": 13,
+   "ok": 12,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 2,
+   "ends_within_1y": 8,
+   "ends_1_2y": 1,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "BM": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "BO": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "BR": {
+   "feeds": 5,
+   "ok": 5,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 4,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "BY": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "CA": {
+   "feeds": 135,
+   "ok": 132,
+   "expired": 2,
+   "expired_over_1y": 2,
+   "ends_within_30d": 5,
+   "ends_within_1y": 104,
+   "ends_1_2y": 13,
+   "ends_after_2y": 8,
+   "expired_share": 0.0152
+  },
+  "CG": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "CH": {
+   "feeds": 6,
+   "ok": 6,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 6,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "CL": {
+   "feeds": 2,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "CN": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 2,
+   "expired_share": 0.0
+  },
+  "CO": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "CR": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "CY": {
+   "feeds": 7,
+   "ok": 7,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 6,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "CZ": {
+   "feeds": 6,
+   "ok": 6,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 4,
+   "ends_1_2y": 0,
+   "ends_after_2y": 2,
+   "expired_share": 0.0
+  },
+  "DE": {
+   "feeds": 39,
+   "ok": 32,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 2,
+   "ends_within_1y": 30,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "DK": {
+   "feeds": 4,
+   "ok": 4,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 3,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "DZ": {
+   "feeds": 3,
+   "ok": 3,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 2,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "EE": {
+   "feeds": 27,
+   "ok": 27,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 2,
+   "ends_within_1y": 13,
+   "ends_1_2y": 8,
+   "ends_after_2y": 4,
+   "expired_share": 0.0
+  },
+  "EG": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 1,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 1.0
+  },
+  "ES": {
+   "feeds": 124,
+   "ok": 120,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 11,
+   "ends_within_1y": 89,
+   "ends_1_2y": 8,
+   "ends_after_2y": 12,
+   "expired_share": 0.0
+  },
+  "ET": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "FI": {
+   "feeds": 21,
+   "ok": 20,
+   "expired": 1,
+   "expired_over_1y": 1,
+   "ends_within_30d": 1,
+   "ends_within_1y": 16,
+   "ends_1_2y": 1,
+   "ends_after_2y": 1,
+   "expired_share": 0.05
+  },
+  "FR": {
+   "feeds": 487,
+   "ok": 475,
+   "expired": 4,
+   "expired_over_1y": 0,
+   "ends_within_30d": 17,
+   "ends_within_1y": 403,
+   "ends_1_2y": 29,
+   "ends_after_2y": 22,
+   "expired_share": 0.0084
+  },
+  "GB": {
+   "feeds": 41,
+   "ok": 39,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 9,
+   "ends_within_1y": 19,
+   "ends_1_2y": 6,
+   "ends_after_2y": 5,
+   "expired_share": 0.0
+  },
+  "GE": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "GH": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "GL": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "HN": {
+   "feeds": 1,
+   "ok": 0,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": null
+  },
+  "HR": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 2,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "HU": {
+   "feeds": 7,
+   "ok": 7,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 6,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "ID": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "IE": {
+   "feeds": 21,
+   "ok": 21,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 20,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "IL": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "IN": {
+   "feeds": 10,
+   "ok": 10,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 6,
+   "ends_1_2y": 1,
+   "ends_after_2y": 3,
+   "expired_share": 0.0
+  },
+  "IS": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "IT": {
+   "feeds": 103,
+   "ok": 100,
+   "expired": 1,
+   "expired_over_1y": 1,
+   "ends_within_30d": 14,
+   "ends_within_1y": 82,
+   "ends_1_2y": 2,
+   "ends_after_2y": 1,
+   "expired_share": 0.01
+  },
+  "JP": {
+   "feeds": 583,
+   "ok": 581,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 14,
+   "ends_within_1y": 544,
+   "ends_1_2y": 20,
+   "ends_after_2y": 3,
+   "expired_share": 0.0
+  },
+  "LK": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "LT": {
+   "feeds": 11,
+   "ok": 11,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 10,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "LV": {
+   "feeds": 12,
+   "ok": 12,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 11,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "MA": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "MC": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "MD": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "ME": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "MK": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 0,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "MX": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 2,
+   "expired_share": 0.0
+  },
+  "MY": {
+   "feeds": 18,
+   "ok": 18,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 5,
+   "ends_within_1y": 11,
+   "ends_1_2y": 0,
+   "ends_after_2y": 2,
+   "expired_share": 0.0
+  },
+  "NG": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "NO": {
+   "feeds": 4,
+   "ok": 4,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 3,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "NZ": {
+   "feeds": 10,
+   "ok": 10,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 5,
+   "ends_1_2y": 5,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "PE": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 2,
+   "expired_share": 0.0
+  },
+  "PH": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 2,
+   "expired_over_1y": 2,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 1.0
+  },
+  "PL": {
+   "feeds": 36,
+   "ok": 34,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 5,
+   "ends_within_1y": 28,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "PT": {
+   "feeds": 26,
+   "ok": 26,
+   "expired": 3,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 13,
+   "ends_1_2y": 5,
+   "ends_after_2y": 4,
+   "expired_share": 0.1154
+  },
+  "RO": {
+   "feeds": 28,
+   "ok": 24,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 18,
+   "ends_1_2y": 5,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "RS": {
+   "feeds": 5,
+   "ok": 5,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 2,
+   "ends_1_2y": 0,
+   "ends_after_2y": 2,
+   "expired_share": 0.0
+  },
+  "SA": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 1,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 1.0
+  },
+  "SE": {
+   "feeds": 46,
+   "ok": 46,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 3,
+   "ends_within_1y": 40,
+   "ends_1_2y": 3,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "SG": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 1,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "SI": {
+   "feeds": 5,
+   "ok": 5,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 3,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "SK": {
+   "feeds": 4,
+   "ok": 4,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 3,
+   "ends_1_2y": 1,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "TH": {
+   "feeds": 2,
+   "ok": 2,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "TN": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 0,
+   "ends_1_2y": 0,
+   "ends_after_2y": 1,
+   "expired_share": 0.0
+  },
+  "TR": {
+   "feeds": 20,
+   "ok": 18,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 18,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "UA": {
+   "feeds": 7,
+   "ok": 7,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 1,
+   "ends_within_1y": 2,
+   "ends_1_2y": 2,
+   "ends_after_2y": 2,
+   "expired_share": 0.0
+  },
+  "US": {
+   "feeds": 909,
+   "ok": 879,
+   "expired": 9,
+   "expired_over_1y": 6,
+   "ends_within_30d": 41,
+   "ends_within_1y": 606,
+   "ends_1_2y": 124,
+   "ends_after_2y": 99,
+   "expired_share": 0.0102
+  },
+  "UY": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "XK": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  },
+  "ZA": {
+   "feeds": 1,
+   "ok": 1,
+   "expired": 0,
+   "expired_over_1y": 0,
+   "ends_within_30d": 0,
+   "ends_within_1y": 1,
+   "ends_1_2y": 0,
+   "ends_after_2y": 0,
+   "expired_share": 0.0
+  }
+ },
+ "end_days": {
+  "all": {
+   "n": 2341,
+   "top": [
+    [
+     "12-31",
+     416,
+     0.1777
+    ],
+    [
+     "03-31",
+     302,
+     0.129
+    ],
+    [
+     "08-31",
+     73,
+     0.0312
+    ],
+    [
+     "12-12",
+     73,
+     0.0312
+    ],
+    [
+     "09-30",
+     71,
+     0.0303
+    ],
+    [
+     "02-01",
+     49,
+     0.0209
+    ],
+    [
+     "01-03",
+     45,
+     0.0192
+    ],
+    [
+     "04-30",
+     45,
+     0.0192
+    ],
+    [
+     "03-01",
+     40,
+     0.0171
+    ],
+    [
+     "11-30",
+     40,
+     0.0171
+    ]
+   ]
+  },
+  "JP": {
+   "n": 558,
+   "top": [
+    [
+     "03-31",
+     287,
+     0.5143
+    ],
+    [
+     "09-30",
+     64,
+     0.1147
+    ],
+    [
+     "12-31",
+     20,
+     0.0358
+    ],
+    [
+     "04-30",
+     16,
+     0.0287
+    ],
+    [
+     "12-28",
+     9,
+     0.0161
+    ],
+    [
+     "06-30",
+     8,
+     0.0143
+    ],
+    [
+     "11-30",
+     8,
+     0.0143
+    ],
+    [
+     "10-01",
+     7,
+     0.0125
+    ],
+    [
+     "01-23",
+     6,
+     0.0108
+    ],
+    [
+     "03-30",
+     6,
+     0.0108
+    ]
+   ]
+  },
+  "US": {
+   "n": 647,
+   "top": [
+    [
+     "12-31",
+     99,
+     0.153
+    ],
+    [
+     "02-01",
+     46,
+     0.0711
+    ],
+    [
+     "03-01",
+     39,
+     0.0603
+    ],
+    [
+     "01-01",
+     25,
+     0.0386
+    ],
+    [
+     "04-30",
+     23,
+     0.0355
+    ],
+    [
+     "04-01",
+     22,
+     0.034
+    ],
+    [
+     "01-02",
+     21,
+     0.0325
+    ],
+    [
+     "12-01",
+     18,
+     0.0278
+    ],
+    [
+     "01-30",
+     17,
+     0.0263
+    ],
+    [
+     "10-31",
+     15,
+     0.0232
+    ]
+   ]
+  }
+ },
+ "ranged": {
+  "yes": 2825
+ },
+ "bytes_read": 457862613,
+ "zip_bytes": 18284970078,
+ "predictions": {
+  "W1": {
+   "text": "Worldwide, between 10% and 40% of the active feeds read have no service left on the as-of date.",
+   "value": 0.0086,
+   "held": false
+  },
+  "W2": {
+   "text": "Feeds imported from TransitFeeds (ids tfs-) are expired more often than feeds added as mdb- (one-sided Fisher exact test, p < 0.05).",
+   "value": null,
+   "held": false
+  },
+  "W3": {
+   "text": "In Japan (country JP) at most 3% of the feeds read are expired.",
+   "value": 0.0,
+   "held": true
+  },
+  "W4": {
+   "text": "Among feeds whose service ends within a year of the as-of date, the most common last day of the year is 12-31, with at least 10% of them.",
+   "value": "12-31 0.1777",
+   "held": true
+  },
+  "W5": {
+   "text": "Among Japanese feeds whose service ends within a year, at least 25% end on 03-31 (the end of the fiscal year).",
+   "value": 0.5143,
+   "held": true
+  },
+  "W6": {
+   "text": "In the United States (country US) between 8% and 30% of the feeds read are expired.",
+   "value": 0.0102,
+   "held": false
+  }
+ },
+ "generated_at": "2026-10-23T19:50:17Z",
+ "by": "MV2 of Munim, Inc. (made with AI agents working in MV2's name)"
+}
