@@ -1,0 +1,206 @@
+{
+ "as_of": "2026-10-23",
+ "statuses": [
+  "active",
+  "inactive",
+  "future"
+ ],
+ "catalog_status": {
+  "active": 2880,
+  "deprecated": 1025,
+  "inactive": 721,
+  "future": 14,
+  "development": 6
+ },
+ "entries": 3615,
+ "by_status": {
+  "active": 2880,
+  "inactive": 721,
+  "future": 14
+ },
+ "mirror_results": {
+  "ok": 3541,
+  "no_latest": 69,
+  "bad_zip": 5
+ },
+ "groups": {
+  "expired": 698,
+  "control": 300,
+  "control_asked": 300,
+  "seed": 20261024
+ },
+ "expired_verdicts": {
+  "same_file": 461,
+  "differs_running": 17,
+  "differs_ended": 1,
+  "producer_no_dates": 0,
+  "producer_unreadable": 196,
+  "auth_required": 23,
+  "no_direct_url": 0
+ },
+ "control_verdicts": {
+  "same_file": 239,
+  "differs_running": 8,
+  "differs_ended": 0,
+  "producer_no_dates": 0,
+  "producer_unreadable": 32,
+  "auth_required": 21,
+  "no_direct_url": 0
+ },
+ "expired_verdicts_by_status": {
+  "active": {
+   "same_file": 11,
+   "differs_running": 0,
+   "differs_ended": 0,
+   "producer_no_dates": 0,
+   "producer_unreadable": 14,
+   "auth_required": 0,
+   "no_direct_url": 0
+  },
+  "inactive": {
+   "same_file": 450,
+   "differs_running": 17,
+   "differs_ended": 1,
+   "producer_no_dates": 0,
+   "producer_unreadable": 182,
+   "auth_required": 23,
+   "no_direct_url": 0
+  }
+ },
+ "expired_verdicts_by_source": {
+  "jbda": {
+   "same_file": 14,
+   "differs_running": 0,
+   "differs_ended": 0,
+   "producer_no_dates": 0,
+   "producer_unreadable": 29,
+   "auth_required": 0,
+   "no_direct_url": 0
+  },
+  "mdb": {
+   "same_file": 299,
+   "differs_running": 14,
+   "differs_ended": 0,
+   "producer_no_dates": 0,
+   "producer_unreadable": 115,
+   "auth_required": 23,
+   "no_direct_url": 0
+  },
+  "ntd": {
+   "same_file": 48,
+   "differs_running": 0,
+   "differs_ended": 0,
+   "producer_no_dates": 0,
+   "producer_unreadable": 12,
+   "auth_required": 0,
+   "no_direct_url": 0
+  },
+  "odpt": {
+   "same_file": 3,
+   "differs_running": 0,
+   "differs_ended": 0,
+   "producer_no_dates": 0,
+   "producer_unreadable": 1,
+   "auth_required": 0,
+   "no_direct_url": 0
+  },
+  "tdg": {
+   "same_file": 48,
+   "differs_running": 1,
+   "differs_ended": 0,
+   "producer_no_dates": 0,
+   "producer_unreadable": 5,
+   "auth_required": 0,
+   "no_direct_url": 0
+  },
+  "tld": {
+   "same_file": 49,
+   "differs_running": 2,
+   "differs_ended": 1,
+   "producer_no_dates": 0,
+   "producer_unreadable": 34,
+   "auth_required": 0,
+   "no_direct_url": 0
+  }
+ },
+ "expired_failures": {
+  "http_404": 105,
+  "network_error": 30,
+  "bad_zip": 20,
+  "http_403": 16,
+  "http_416": 10,
+  "http_501": 4,
+  "http_301": 3,
+  "bad_content_range": 2,
+  "http_502": 2,
+  "http_500": 2,
+  "http_511": 1,
+  "http_401": 1
+ },
+ "control_failures": {
+  "http_404": 11,
+  "http_502": 7,
+  "network_error": 3,
+  "bad_zip": 3,
+  "http_501": 3,
+  "http_416": 3,
+  "http_403": 2
+ },
+ "expired_redirected": 4,
+ "stale": {
+  "n": 17,
+  "days_since_copy_ended": {
+   "n": 17,
+   "min": 18,
+   "q1": 55.0,
+   "median": 108,
+   "q3": 132.0,
+   "max": 1756
+  },
+  "producer_ahead_days": {
+   "n": 17,
+   "min": 61,
+   "q1": 112.0,
+   "median": 182,
+   "q3": 364.0,
+   "max": 2922
+  },
+  "producer_modified_days_before_as_of": {
+   "n": 12,
+   "min": -1,
+   "q1": 3.75,
+   "median": 17.0,
+   "q3": 47.25,
+   "max": 93
+  }
+ },
+ "predictions": {
+  "S1": {
+   "text": "Of the expired-group entries whose producer URL needs no key, between 35% and 85% return a readable zip with service dates.",
+   "value": 0.7096,
+   "held": true
+  },
+  "S2": {
+   "text": "Of the expired-group entries whose producer file is read with service dates, at most 15% are stale copies: the producer's file differs from the catalog's copy and still has service on the as-of date.",
+   "value": 0.0355,
+   "held": true
+  },
+  "S3": {
+   "text": "Of the expired-group entries whose producer file is read with service dates and has no service left either, at least 80% hold the same file as the catalog's copy.",
+   "value": 0.9978,
+   "held": true
+  },
+  "S4": {
+   "text": "Of the control-group entries whose producer file is read with service dates, at least 80% hold the same file as the catalog's copy.",
+   "value": 0.9676,
+   "held": true
+  },
+  "S5": {
+   "text": "Among the expired-group producer URLs that need no key and cannot be read, HTTP 404 is the most common result (strictly more often than any other).",
+   "value": "http_404 105 of 196",
+   "held": true
+  }
+ },
+ "generated_at": "2026-10-24T05:13:42Z",
+ "by": "MV2 of Munim, Inc. (made with AI agents working in MV2's name)"
+}

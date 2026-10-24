@@ -11,14 +11,19 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 
 ## Status
 
+- **2026-10-24: follow-up pre-registered.** [predictions-t-2026-10-24.md](predictions-t-2026-10-24.md) fixes four
+  predictions (T1 to T4) for a run on or after 2026-10-30 that checks every live entry against its producer: are the
+  17 stale copies still stale a week later, and how many entries whose copy still runs have a stalled download? It is
+  scored by `tools/stall_check.py`.
+- **2026-10-24: source check run, `source/2026-10-23/` (v0.4.0).** All five pre-registered predictions (S1 to S5)
+  held. Of 698 catalog entries whose copy has no service left, 479 producer files could be read: 461 (96.2%) are the
+  same file, so the timetable has really ended at the source, and 17 (3.5%) are **stale copies**: the producer serves a
+  newer timetable that still runs, which the catalog has not stored. Six were checked by hand on their catalog pages;
+  their last downloads date from 2025-05-08 to 2026-05-29, and no download error is shown.
 - **2026-10-24: correction to the mirror check (v0.3.1).** The v0.3.0 write-up said 13 Japanese entries were stale
   mirrors of feeds the repository still serves a valid file for. That was wrong. All 13 hold exactly the repository's
   current file; the file's own calendar has ended, but the repository's listed validity dates run past it. No stale
   mirror was found among the 43 entries. Details under "Correction" below; the data and the M4 score are unchanged.
-- **2026-10-24: source check pre-registered.** [predictions-s-2026-10-24.md](predictions-s-2026-10-24.md) fixes
-  five predictions (S1 to S5) for `tools/source_check.py`. Worldwide, for every catalog entry whose copy has no
-  service left, it asks: has the producer stopped publishing, or is there a newer file the catalog has not picked up?
-  The results are pending.
 - **2026-10-24: mirror check run, `mirror/2026-10-24/`.** 584 catalog entries that mirror Japan's GTFS Data
   Repository were compared with the files the repository serves itself. Four of five pre-registered predictions
   (M1 to M5) held. 97.8% of active entries hold the repository's current file, no entry carries a timetable the
@@ -36,7 +41,7 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 - **2026-10-23: first census (active feeds only), `world/2026-10-22/`.** 2,800 of 2,880 active feeds read; 24
   expired (0.9%). Three of six predictions held. The low share was a flaw in the method, explained below.
 
-## Source check: the catalog's copy against the producer's own file (pre-registered, results pending)
+## Source check: the catalog's copy against the producer's own file (results)
 
 The catalog serves its own copy of each feed's latest dataset (`urls.latest`) and records where the producer
 publishes it (`urls.direct_download`). `tools/source_check.py` reads every copy and then, for each entry whose copy
@@ -46,17 +51,55 @@ the same CRC-32 and size. A **stale copy** is an expired-group entry whose produ
 has service. Producer URLs that need a key are not read, and each producer host is sent at most one new file request
 per second.
 
-| | Prediction (fixed before any producer file was read) |
-|---|---|
-| S1 | 35–85% of expired-group producer URLs that need no key return a readable zip with service dates |
-| S2 | at most 15% of expired-group entries whose producer file is read are stale copies |
-| S3 | at least 80% of expired-group entries whose producer file has also ended hold the same file as the copy |
-| S4 | at least 80% of control-group entries whose producer file is read hold the same file as the copy |
-| S5 | HTTP 404 is the most common failure among expired-group producer URLs that cannot be read |
+The check ran on 2026-10-24 between 04:52 and 05:14 UTC, with the as-of date 2026-10-23, on the 3,615 entries with
+status `active`, `inactive` or `future`. Full tables: [summary.md](source/2026-10-23/summary.md); one row per entry:
+[sources.csv](source/2026-10-23/sources.csv); hand checks and exploratory counts:
+[hand-checks.md](source/2026-10-23/hand-checks.md).
+
+| | expired group (698) | control group (300) |
+|---|---|---|
+| same file at the producer | 461 | 239 |
+| producer's file differs and still runs | 17 (stale copies) | 8 |
+| producer's file differs and has ended too | 1 | 0 |
+| producer URL could not be read | 196 (HTTP 404: 105) | 32 |
+| producer URL needs a key (not read) | 23 | 21 |
+
+| | Prediction (fixed before any producer file was read) | Result |
+|---|---|---|
+| S1 | 35–85% of expired-group producer URLs that need no key return a readable zip with service dates | 71.0% (479 of 675), held |
+| S2 | at most 15% of expired-group entries whose producer file is read are stale copies | 3.5% (17 of 479), held |
+| S3 | at least 80% of expired-group entries whose producer file has also ended hold the same file as the copy | 99.8% (461 of 462), held |
+| S4 | at least 80% of control-group entries whose producer file is read hold the same file as the copy | 96.8% (239 of 247), held |
+| S5 | HTTP 404 is the most common failure among expired-group producer URLs that cannot be read | 105 of 196, held |
+
+**What it means.** When the catalog marks a feed `inactive` because its copy has run out, that is almost always
+true at the source: 461 of the 479 producer files we could read are the very same expired file. The predictions were
+loose, and all five held.
+
+**The 17 stale copies.** These are entries the catalog shows as expired and `inactive` although the producer publishes
+a valid timetable at the URL the catalog records. They include MARTA (Atlanta), Metro St. Louis, the Milwaukee County
+Transit System, Kitsap Transit, Sun Metro (El Paso), Tampere (Finland), Metro de Málaga, AMT Genova, SKM Tricity rail
+(Poland) and Szeged (Hungary); the full list is in [summary.md](source/2026-10-23/summary.md). The catalog's copy had
+run out a median of 108 days before the as-of date (18 to 1,756 days), and the producer's file runs a median of 182
+days beyond it. We checked six by hand on their catalog pages ([hand-checks.md](source/2026-10-23/hand-checks.md)).
+Each page lists the producer URL we read and a last download on the day we recorded: MARTA 2026-04-19, Tampere and
+Málaga 2026-05-13, Metro St. Louis 2026-05-29 (weekly downloads before that), Milwaukee 2025-05-08 and Royan's
+Cara'bus 2026-03-11. None shows a download error, although the catalog checks producer URLs daily. So for these feeds
+the downloads stopped while the producer kept publishing. We do not know why. MobilityData is already working on
+download failures that do not reproduce by hand
+([mobility-feed-api#1860](https://github.com/MobilityData/mobility-feed-api/issues/1860)) and on Málaga's URL
+([mobility-database-catalogs#1618](https://github.com/MobilityData/mobility-database-catalogs/issues/1618)); we found no
+public issue for the other feeds checked (searched 2026-10-24).
+
+**Exploratory, not predicted.** 10 of the 17 stale copies were stored between 2026-04-19 and 2026-06-18, against 16 of
+the 461 entries whose producer serves the same file. In 9 of the 12 stale cases whose producer sends a Last-Modified
+header, the newer file had been on the server for 5 to 93 days. The 8 differing files in the control group are not
+stale: the catalog stored all 8 copies between 2026-10-22 and 2026-10-24, and their producer files run at most 9 days
+longer.
 
 Why it matters: a feed whose catalog copy has ended is marked `inactive` and drops out of most uses of the catalog.
-If its producer still publishes a valid timetable, riders lose a service that exists. If not, the copy is a faithful
-record. The nearest earlier check we found, ITS Feed's September 2026 download of 828 US entries not marked inactive,
+When its producer still publishes a valid timetable, riders of apps that rely on the catalog lose a service that
+exists. The nearest earlier check we found, ITS Feed's September 2026 download of 828 US entries not marked inactive,
 counted producer URLs that return no zip. It did not compare the files or look at expired entries.
 
 ## Mirror check: the catalog's copies of Japanese feeds (results)
@@ -119,7 +162,8 @@ the 43 is a stale mirror**. In every case the catalog's copy faithfully reflects
 the repository's listed dates overstating the file, a pattern MV2's
 [gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) calendar-gap check already counts in Japan. The
 data and the M4 score are unchanged; only the explanation was wrong. The tool's summary line "the repository's
-current file still runs" should be read as "the repository lists a current file in force".
+current file still runs" should be read as "the repository lists a current file in force". The worldwide source check
+(above) reached the same split for these 43 entries by a different route: 14 same file, 29 unreadable.
 
 Two open, active repository feeds had no catalog entry at all ([missing.csv](mirror/2026-10-24/missing.csv)):
 `hitachinakacity/Hitachinaka-smileaozorabus` and `hidakavillage/GTFS-Hidakavill_Bus`.
@@ -189,8 +233,8 @@ new dataset 2026-10-23). We do not know how often the catalog file is exported o
 length of this lag is not measured yet. The follow-up census is meant to measure it.
 
 What this means for users of the catalog: filtering on `status = active` keeps a small number of long-dead feeds
-(those with no recorded range) and drops a few live ones (recently renewed). Reading the dataset's own calendar
-avoids both.
+(those with no recorded range) and drops a few live ones (recently renewed, or stale copies, above). Reading the
+dataset's own calendar avoids the first; only the producer's own file reveals the second.
 
 ## First census: results and what went wrong
 
@@ -229,9 +273,10 @@ A rider-facing app that loads an expired timetable shows no buses, or wrong ones
 time (MobilityData's `feed_expiration_date_7_days` and `_30_days` notices). ITS Feed counted the notices for 736 US
 feeds in September 2026 ([article](https://its-feed.com/articles/what-the-gtfs-validator-checks/)). No worldwide,
 country-by-country count was found (searched 2026-10-23), and we found no earlier check of how often the catalog's
-status disagrees with the feeds' own calendars, of how closely its copies follow a national repository, or of whether
-its expired copies still have a live file at the producer (searched 2026-10-24). MV2's sister project
-[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures expiry in depth for Japan.
+status disagrees with the feeds' own calendars, of how closely its copies follow a national repository, or of how
+many of its expired copies have a live file at the producer (searched 2026-10-24; MobilityData's issues discuss
+single feeds). MV2's sister project [gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures
+expiry in depth for Japan.
 
 ## Method
 
@@ -264,25 +309,32 @@ licences and are not redistributed.
   catalogued twice.
 - The hand checks cover 10 of the 38 disagreeing entries.
 - The mirror check reads each file once on one day and compares only the repository's current, next and previous
-  files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy, which we have not
-  confirmed with MobilityData. Its "running" test uses the repository's listed dates, not the file's calendar.
-- The source check reads each producer URL once. A producer can serve its URL differently to the catalog's fetcher
-  than to ours, and files that differ only in non-calendar members count as different.
+  files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy; for the six stale copies
+  checked by hand, it matched the download date on the catalog page. Its "running" test uses the repository's listed
+  dates, not the file's calendar.
+- The source check reads each producer URL once, from one place. A producer can serve its URL differently to the
+  catalog's fetcher than to ours, and files that differ only in non-calendar members count as different. It finds a
+  stalled download only once the catalog's copy has run out: an entry whose downloads stopped but whose copy still
+  runs is not counted. 6 of the 17 stale copies were checked by hand.
 
 ## Files
 
 - `predictions-2026-10-23.md`, `predictions-v2-2026-10-23.md`, `predictions-y-2026-10-23.md`,
-  `predictions-m-2026-10-24.md`, `predictions-s-2026-10-24.md`: the predictions, each fixed before the run it scores.
+  `predictions-m-2026-10-24.md`, `predictions-s-2026-10-24.md`, `predictions-t-2026-10-24.md`: the predictions,
+  each fixed before the run it scores.
 - `world/2026-10-22/`: the first census (active only). `world/2026-10-22-all/`: the second census (active, inactive,
   future). Each has `feeds.csv` (one row per feed), `by_country.csv`, `summary.json` and `summary.md`.
 - `mirror/2026-10-24/`: the mirror check against the GTFS Data Repository: `mirror.csv` (one row per `jbda-` entry),
   `missing.csv` (repository feeds with no entry), `summary.json` and `summary.md`.
+- `source/2026-10-23/`: the source check against producers' own files: `sources.csv` (one row per entry, with the
+  verdict for the 998 entries checked), `summary.json`, `summary.md` and `hand-checks.md`.
 - `tools/world_expiry.py`: the census (standard library only); `tools/test_world_expiry.py`: tests on made-up zips
   served from memory, with every expected value worked by hand. `tools/world_diff.py` and
   `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
   `tools/test_mirror_check.py`: the mirror check, tested on made-up zips and API answers. `tools/source_check.py` and
-  `tools/test_source_check.py`: the comparison with producers' files. Tools are committed only after their tests
-  pass.
+  `tools/test_source_check.py`: the comparison with producers' files. `tools/stall_check.py` and
+  `tools/test_stall_check.py`: the follow-up of stale copies and stalled downloads between two source checks. Tools
+  are committed only after their tests pass.
 
 ## Reproduce
 
@@ -291,6 +343,7 @@ python tools/test_world_expiry.py -v
 python tools/test_world_diff.py -v
 python tools/test_mirror_check.py -v
 python tools/test_source_check.py -v
+python tools/test_stall_check.py -v
 curl -o feeds_v2.csv https://files.mobilitydatabase.org/feeds_v2.csv
 python tools/world_expiry.py --catalog feeds_v2.csv --statuses active,inactive,future --predictions X --out out/world
 python tools/world_diff.py --before world/2026-10-22-all/feeds.csv --after out/world --predictions Y --out out/diff
