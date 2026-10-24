@@ -4,18 +4,28 @@ How many of the world's catalogued public-transport timetables have run out of d
 GTFS Schedule feeds in the [Mobility Database](https://mobilitydatabase.org/) catalog, the last date on which any of
 their services runs, and how many feeds have no service left. Results are broken down by catalog status, country and
 catalog source. A second tool checks how closely the catalog's copies of Japanese feeds follow the national
-repository they come from.
+repository they come from, and a third compares the catalog's copies worldwide with the files the producers serve
+themselves.
 
 By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0; results and text CC BY 4.0.
 
 ## Status
 
+- **2026-10-24: correction to the mirror check (v0.3.1).** The v0.3.0 write-up said 13 Japanese entries were stale
+  mirrors of feeds the repository still serves a valid file for. That was wrong. All 13 hold exactly the repository's
+  current file; the file's own calendar has ended, but the repository's listed validity dates run past it. No stale
+  mirror was found among the 43 entries. Details under "Correction" below; the data and the M4 score are unchanged.
+- **2026-10-24: source check pre-registered.** [predictions-s-2026-10-24.md](predictions-s-2026-10-24.md) fixes
+  five predictions (S1 to S5) for `tools/source_check.py`. Worldwide, for every catalog entry whose copy has no
+  service left, it asks: has the producer stopped publishing, or is there a newer file the catalog has not picked up?
+  The results are pending.
 - **2026-10-24: mirror check run, `mirror/2026-10-24/`.** 584 catalog entries that mirror Japan's GTFS Data
-  Repository were compared with the files the repository serves itself; four of five pre-registered predictions
+  Repository were compared with the files the repository serves itself. Four of five pre-registered predictions
   (M1 to M5) held. 97.8% of active entries hold the repository's current file, no entry carries a timetable the
   repository has only published for a later date, and 99.6% of the repository's open active feeds have an entry.
-  M4 missed: of 43 entries whose copy has no service left, 30 (69.8%, predicted at least 75%) have none at the
-  repository either, because 13 are stale mirrors of feeds the repository still serves a valid file for.
+  M4 missed: of 43 entries whose copy has no service left, 30 (69.8%, predicted at least 75%) have no file in force
+  at the repository either by its listed dates. The other 13 are files whose own calendar ended before the date the
+  repository lists (see the correction).
 - **2026-10-23: second census (active, inactive and future feeds), `world/2026-10-22-all/`.** 3,615 feeds; 3,502
   read; 698 (19.9%) have no service left, 392 of them for more than a year. All six pre-registered predictions (X1 to
   X6) held. 38 entries have a catalog status that disagrees with their own calendar, for two different reasons
@@ -25,6 +35,29 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
   after 2026-10-30 and compared with `tools/world_diff.py`.
 - **2026-10-23: first census (active feeds only), `world/2026-10-22/`.** 2,800 of 2,880 active feeds read; 24
   expired (0.9%). Three of six predictions held. The low share was a flaw in the method, explained below.
+
+## Source check: the catalog's copy against the producer's own file (pre-registered, results pending)
+
+The catalog serves its own copy of each feed's latest dataset (`urls.latest`) and records where the producer
+publishes it (`urls.direct_download`). `tools/source_check.py` reads every copy and then, for each entry whose copy
+has no service left (the expired group), the producer's file. As a control it does the same for a seeded random
+sample of 300 entries whose copy still has service. Two files are the same when they hold the same `.txt` members with
+the same CRC-32 and size. A **stale copy** is an expired-group entry whose producer serves a different file that still
+has service. Producer URLs that need a key are not read, and each producer host is sent at most one new file request
+per second.
+
+| | Prediction (fixed before any producer file was read) |
+|---|---|
+| S1 | 35–85% of expired-group producer URLs that need no key return a readable zip with service dates |
+| S2 | at most 15% of expired-group entries whose producer file is read are stale copies |
+| S3 | at least 80% of expired-group entries whose producer file has also ended hold the same file as the copy |
+| S4 | at least 80% of control-group entries whose producer file is read hold the same file as the copy |
+| S5 | HTTP 404 is the most common failure among expired-group producer URLs that cannot be read |
+
+Why it matters: a feed whose catalog copy has ended is marked `inactive` and drops out of most uses of the catalog.
+If its producer still publishes a valid timetable, riders lose a service that exists. If not, the copy is a faithful
+record. The nearest earlier check we found, ITS Feed's September 2026 download of 828 US entries not marked inactive,
+counted producer URLs that return no zip. It did not compare the files or look at expired entries.
 
 ## Mirror check: the catalog's copies of Japanese feeds (results)
 
@@ -60,23 +93,41 @@ already published (a median of 18 days before it starts, as
 [gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) also found), and the mirror held none of them: a
 rider taking a Japanese feed from the global catalog sees a new timetable only on its first day, not when the operator
 publishes it. The 12 active entries that were not on the current file were all files the repository had re-published
-within the last day — eight Sanco (Mie Kotsu) feeds whose new `current` was published the same morning the check ran,
-and others only hours old — so the daily mirror had not yet caught up. Among entries holding the current file, the
-mirror was written a median of 0 days after the file took effect (quartiles 0 to 1).
+within the last day. Eight were Sanco (Mie Kotsu) feeds whose new `current` was published the same morning the check
+ran, and the others were only hours old, so the daily mirror had not yet caught up. Among entries holding the current
+file, the mirror was written a median of 0 days after the file took effect (quartiles 0 to 1).
 
-**What missed (M4), and why it is the interesting part.** 43 entries have a mirrored copy with no service left on the
-as-of date. For 30 of them the repository has no file in force either; but for 13 the repository's `current` file is
-still running. For these 13 the catalog's copy has expired while the repository already serves a newer, valid file —
-the mirror is stale, not the source. This is the same lag the second census found between the catalog's status and the
-feeds' own calendars, seen here against the authoritative national repository.
+**What missed (M4).** 43 entries have a mirrored copy with no service left on the as-of date. The tool counts the
+repository as "running" when its API lists a current file whose dates cover the as-of date. By that rule, 30 have none
+and 13 do, so M4 missed as recorded.
+
+**Correction (2026-10-24).** Our v0.3.0 write-up read those 13 as stale mirrors: copies that had expired while the
+repository served a newer, valid file. `mirror.csv` shows otherwise. All 13 have `holds = current`: the catalog's copy
+is byte-for-byte the repository's current file (the same members, CRC-32 and sizes), and `source_last` equals
+`mirror_last`. What differs is the repository's listing. Each file's own calendar ended before the date the repository
+lists for it:
+
+- 10 Nakatsu City (中津市) route feeds: listed in force to 2026-10-31, but the calendar ends between 2026-09-24 and
+  2026-09-30.
+- 王滝村 (Otaki Village): listed to 2027-03-31; the calendar ends 2026-10-12.
+- 西脇市 (Nishiwaki City) and 南部町 (Nanbu Town): listed in force 2026-04-01 to 2027-03-31, but the file holds the
+  previous fiscal year's calendar (2025-04-01 to 2026-03-31).
+
+The 14th entry holding the current file (四万十市 demand-responsive transport) is discontinued at the repository. The
+other 29 have no current file at the repository any more: 26 answer HTTP 404 and 3 are no longer listed. So **none of
+the 43 is a stale mirror**. In every case the catalog's copy faithfully reflects what the repository serves. The 13 are
+the repository's listed dates overstating the file, a pattern MV2's
+[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) calendar-gap check already counts in Japan. The
+data and the M4 score are unchanged; only the explanation was wrong. The tool's summary line "the repository's
+current file still runs" should be read as "the repository lists a current file in force".
 
 Two open, active repository feeds had no catalog entry at all ([missing.csv](mirror/2026-10-24/missing.csv)):
 `hitachinakacity/Hitachinaka-smileaozorabus` and `hidakavillage/GTFS-Hidakavill_Bus`.
 
 The five predictions were fixed before any file was read
 ([predictions-m-2026-10-24.md](predictions-m-2026-10-24.md)). Why it matters: a timetable published weeks ahead helps
-only the users who can see it before it starts, and a catalogued copy that outlives its source shows riders buses that
-no longer run.
+only the users who can see it before it starts, and a listing that outlives its file tells riders a timetable is in
+force when it has run out.
 
 ## Second census: results
 
@@ -178,9 +229,9 @@ A rider-facing app that loads an expired timetable shows no buses, or wrong ones
 time (MobilityData's `feed_expiration_date_7_days` and `_30_days` notices). ITS Feed counted the notices for 736 US
 feeds in September 2026 ([article](https://its-feed.com/articles/what-the-gtfs-validator-checks/)). No worldwide,
 country-by-country count was found (searched 2026-10-23), and we found no earlier check of how often the catalog's
-status disagrees with the feeds' own calendars, or of how closely its copies follow a national repository (searched
-2026-10-24). MV2's sister project [gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures
-expiry in depth for Japan.
+status disagrees with the feeds' own calendars, of how closely its copies follow a national repository, or of whether
+its expired copies still have a live file at the producer (searched 2026-10-24). MV2's sister project
+[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures expiry in depth for Japan.
 
 ## Method
 
@@ -198,6 +249,8 @@ expiry in depth for Japan.
    the first one and reports whether they agree in the second, plus every status move between the two files.
 6. `tools/mirror_check.py` compares the catalog's copies of `jbda-` feeds with the GTFS Data Repository (above). Its
    as-of date is the run day in Japan time.
+7. `tools/source_check.py` compares the catalog's copies with the producers' own files worldwide (above). Its as-of
+   date is the census's.
 
 The census publishes only dates and counts derived from each feed. Feed contents stay under their publishers'
 licences and are not redistributed.
@@ -212,12 +265,14 @@ licences and are not redistributed.
 - The hand checks cover 10 of the 38 disagreeing entries.
 - The mirror check reads each file once on one day and compares only the repository's current, next and previous
   files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy, which we have not
-  confirmed with MobilityData.
+  confirmed with MobilityData. Its "running" test uses the repository's listed dates, not the file's calendar.
+- The source check reads each producer URL once. A producer can serve its URL differently to the catalog's fetcher
+  than to ours, and files that differ only in non-calendar members count as different.
 
 ## Files
 
 - `predictions-2026-10-23.md`, `predictions-v2-2026-10-23.md`, `predictions-y-2026-10-23.md`,
-  `predictions-m-2026-10-24.md`: the predictions, each fixed before the run it scores.
+  `predictions-m-2026-10-24.md`, `predictions-s-2026-10-24.md`: the predictions, each fixed before the run it scores.
 - `world/2026-10-22/`: the first census (active only). `world/2026-10-22-all/`: the second census (active, inactive,
   future). Each has `feeds.csv` (one row per feed), `by_country.csv`, `summary.json` and `summary.md`.
 - `mirror/2026-10-24/`: the mirror check against the GTFS Data Repository: `mirror.csv` (one row per `jbda-` entry),
@@ -225,8 +280,9 @@ licences and are not redistributed.
 - `tools/world_expiry.py`: the census (standard library only); `tools/test_world_expiry.py`: tests on made-up zips
   served from memory, with every expected value worked by hand. `tools/world_diff.py` and
   `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
-  `tools/test_mirror_check.py`: the mirror check, tested on made-up zips and API answers. Tools are committed only
-  after their tests pass.
+  `tools/test_mirror_check.py`: the mirror check, tested on made-up zips and API answers. `tools/source_check.py` and
+  `tools/test_source_check.py`: the comparison with producers' files. Tools are committed only after their tests
+  pass.
 
 ## Reproduce
 
@@ -234,18 +290,18 @@ licences and are not redistributed.
 python tools/test_world_expiry.py -v
 python tools/test_world_diff.py -v
 python tools/test_mirror_check.py -v
+python tools/test_source_check.py -v
 curl -o feeds_v2.csv https://files.mobilitydatabase.org/feeds_v2.csv
 python tools/world_expiry.py --catalog feeds_v2.csv --statuses active,inactive,future --predictions X --out out/world
 python tools/world_diff.py --before world/2026-10-22-all/feeds.csv --after out/world --predictions Y --out out/diff
 python tools/mirror_check.py --catalog feeds_v2.csv --pause 1.0 --out out/mirror
+python tools/source_check.py --catalog feeds_v2.csv --control 300 --seed 20261024 --out out/source
 ```
 
 Census results go to `<out>/<as-of>/`: `feeds.csv` (one row per feed, with its catalog status), `by_country.csv`,
 `summary.json` and `summary.md`. The mirror check writes `mirror.csv` (one row per `jbda-` entry), `missing.csv`
-(repository feeds with no entry), `summary.json` and `summary.md`. The catalog changes daily, so a later run gives
-different counts.
+(repository feeds with no entry), `summary.json` and `summary.md`. The source check writes `sources.csv` (one row per
+entry read), `summary.json` and `summary.md`. The catalog changes daily, so a later run gives different counts.
 
 Source data: the Mobility Database by MobilityData (catalog metadata CC0 1.0) and the GTFS Data Repository API v2
 (https://gtfs-data.jp/). Each dataset belongs to its publisher.
-</content>
-</invoke>
