@@ -11,6 +11,11 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 
 ## Status
 
+- **2026-10-24: all 17 stale copies checked by hand (v0.4.1).** Every catalog page shows the producer host we read,
+  a latest stored download on the day we recorded, and no download error. The last downloads range from 2024-09-02 to
+  2026-07-08. For 12 of the 17 the evidence that downloads stopped while the producer kept publishing is strong; for
+  5 we cannot tell when the producer's newer file appeared
+  ([hand-checks.md](source/2026-10-23/hand-checks.md)).
 - **2026-10-24: follow-up pre-registered.** [predictions-t-2026-10-24.md](predictions-t-2026-10-24.md) fixes four
   predictions (T1 to T4) for a run on or after 2026-10-30 that checks every live entry against its producer: are the
   17 stale copies still stale a week later, and how many entries whose copy still runs have a stalled download? It is
@@ -18,8 +23,7 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 - **2026-10-24: source check run, `source/2026-10-23/` (v0.4.0).** All five pre-registered predictions (S1 to S5)
   held. Of 698 catalog entries whose copy has no service left, 479 producer files could be read: 461 (96.2%) are the
   same file, so the timetable has really ended at the source, and 17 (3.5%) are **stale copies**: the producer serves a
-  newer timetable that still runs, which the catalog has not stored. Six were checked by hand on their catalog pages;
-  their last downloads date from 2025-05-08 to 2026-05-29, and no download error is shown.
+  newer timetable that still runs, which the catalog has not stored.
 - **2026-10-24: correction to the mirror check (v0.3.1).** The v0.3.0 write-up said 13 Japanese entries were stale
   mirrors of feeds the repository still serves a valid file for. That was wrong. All 13 hold exactly the repository's
   current file; the file's own calendar has ended, but the repository's listed validity dates run past it. No stale
@@ -78,18 +82,28 @@ loose, and all five held.
 
 **The 17 stale copies.** These are entries the catalog shows as expired and `inactive` although the producer publishes
 a valid timetable at the URL the catalog records. They include MARTA (Atlanta), Metro St. Louis, the Milwaukee County
-Transit System, Kitsap Transit, Sun Metro (El Paso), Tampere (Finland), Metro de Málaga, AMT Genova, SKM Tricity rail
-(Poland) and Szeged (Hungary); the full list is in [summary.md](source/2026-10-23/summary.md). The catalog's copy had
-run out a median of 108 days before the as-of date (18 to 1,756 days), and the producer's file runs a median of 182
-days beyond it. We checked six by hand on their catalog pages ([hand-checks.md](source/2026-10-23/hand-checks.md)).
-Each page lists the producer URL we read and a last download on the day we recorded: MARTA 2026-04-19, Tampere and
-Málaga 2026-05-13, Metro St. Louis 2026-05-29 (weekly downloads before that), Milwaukee 2025-05-08 and Royan's
-Cara'bus 2026-03-11. None shows a download error, although the catalog checks producer URLs daily. So for these feeds
-the downloads stopped while the producer kept publishing. We do not know why. MobilityData is already working on
-download failures that do not reproduce by hand
-([mobility-feed-api#1860](https://github.com/MobilityData/mobility-feed-api/issues/1860)) and on Málaga's URL
-([mobility-database-catalogs#1618](https://github.com/MobilityData/mobility-database-catalogs/issues/1618)); we found no
-public issue for the other feeds checked (searched 2026-10-24).
+Transit System, Kitsap Transit, Sun Metro (El Paso), Loudoun County Transit, Blacksburg Transit, Tampere (Finland),
+Metro de Málaga, AMT Genova, SKM Tricity rail (Poland), Szeged and Veszprém (Hungary); the full list is in
+[summary.md](source/2026-10-23/summary.md). The catalog's copy had run out a median of 108 days before the as-of date
+(18 to 1,756 days), and the producer's file runs a median of 182 days beyond it.
+
+We checked all 17 by hand on their catalog pages on 2026-10-24
+([hand-checks.md](source/2026-10-23/hand-checks.md)). Each page lists a producer URL on the host we read and a latest
+stored download on the day we recorded, and none shows a download error, although the catalog checks producer URLs
+daily. The last downloads range from 2024-09-02 (Alice Springs, Australia) to 2026-07-08 (Szeged). The evidence that
+the downloads stopped while the producer kept publishing is strong for 12: nine producers (among them MARTA, Málaga,
+Milwaukee and AMT Genova) had the newer file on their server 5 to 93 days before the as-of date by their
+Last-Modified header, and three that republish often were stored every day (SKM, until 2026-06-18), every week (Metro
+St. Louis, until 2026-05-29) or every one to four weeks (Tampere, until 2026-05-13) and never after. For the other 5
+(Loudoun, Alice Springs, Szeged, High Point and Hinton) the producer sends no Last-Modified header, so the copy is stale
+but we cannot tell when the newer file appeared.
+
+We do not know why the downloads stopped. MobilityData is already working on download failures that do not reproduce
+by hand ([mobility-feed-api#1860](https://github.com/MobilityData/mobility-feed-api/issues/1860)) and on Málaga's URL
+([mobility-database-catalogs#1618](https://github.com/MobilityData/mobility-database-catalogs/issues/1618)). Alice
+Springs was reported in 2024 as serving an HTML page to scripted downloads
+([mobility-feed-api#502](https://github.com/MobilityData/mobility-feed-api/issues/502), closed); its page lists two
+downloads after that and none since. We found no public issue for the other stale copies (searched 2026-10-24).
 
 **Exploratory, not predicted.** 10 of the 17 stale copies were stored between 2026-04-19 and 2026-06-18, against 16 of
 the 461 entries whose producer serves the same file. In 9 of the 12 stale cases whose producer sends a Last-Modified
@@ -309,13 +323,14 @@ licences and are not redistributed.
   catalogued twice.
 - The hand checks cover 10 of the 38 disagreeing entries.
 - The mirror check reads each file once on one day and compares only the repository's current, next and previous
-  files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy; for the six stale copies
-  checked by hand, it matched the download date on the catalog page. Its "running" test uses the repository's listed
-  dates, not the file's calendar.
+  files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy. Its "running" test uses
+  the repository's listed dates, not the file's calendar.
 - The source check reads each producer URL once, from one place. A producer can serve its URL differently to the
   catalog's fetcher than to ours, and files that differ only in non-calendar members count as different. It finds a
   stalled download only once the catalog's copy has run out: an entry whose downloads stopped but whose copy still
-  runs is not counted. 6 of the 17 stale copies were checked by hand.
+  runs is not counted. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy; for all 17
+  stale copies, checked by hand, that matched the latest download on the catalog page. The hand checks compare the
+  producer's host, not the full URL, and the catalog pages list at most ten downloads.
 
 ## Files
 
@@ -327,7 +342,7 @@ licences and are not redistributed.
 - `mirror/2026-10-24/`: the mirror check against the GTFS Data Repository: `mirror.csv` (one row per `jbda-` entry),
   `missing.csv` (repository feeds with no entry), `summary.json` and `summary.md`.
 - `source/2026-10-23/`: the source check against producers' own files: `sources.csv` (one row per entry, with the
-  verdict for the 998 entries checked), `summary.json`, `summary.md` and `hand-checks.md`.
+  verdict for the 998 entries checked), `summary.json`, `summary.md` and `hand-checks.md` (all 17 stale copies).
 - `tools/world_expiry.py`: the census (standard library only); `tools/test_world_expiry.py`: tests on made-up zips
   served from memory, with every expected value worked by hand. `tools/world_diff.py` and
   `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
