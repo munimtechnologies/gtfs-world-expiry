@@ -10,10 +10,12 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 
 ## Status
 
-- **2026-10-24: mirror check pre-registered.** [predictions-m-2026-10-24.md](predictions-m-2026-10-24.md) fixes five
-  predictions (M1 to M5) on how the catalog's copies of the feeds it imports from Japan's GTFS Data Repository
-  compare with the files the repository serves itself. `tools/mirror_check.py` runs once, after this commit, and
-  its results go to `mirror/<as-of>/`.
+- **2026-10-24: mirror check run, `mirror/2026-10-24/`.** 584 catalog entries that mirror Japan's GTFS Data
+  Repository were compared with the files the repository serves itself; four of five pre-registered predictions
+  (M1 to M5) held. 97.8% of active entries hold the repository's current file, no entry carries a timetable the
+  repository has only published for a later date, and 99.6% of the repository's open active feeds have an entry.
+  M4 missed: of 43 entries whose copy has no service left, 30 (69.8%, predicted at least 75%) have none at the
+  repository either, because 13 are stale mirrors of feeds the repository still serves a valid file for.
 - **2026-10-23: second census (active, inactive and future feeds), `world/2026-10-22-all/`.** 3,615 feeds; 3,502
   read; 698 (19.9%) have no service left, 392 of them for more than a year. All six pre-registered predictions (X1 to
   X6) held. 38 entries have a catalog status that disagrees with their own calendar, for two different reasons
@@ -24,7 +26,7 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 - **2026-10-23: first census (active feeds only), `world/2026-10-22/`.** 2,800 of 2,880 active feeds read; 24
   expired (0.9%). Three of six predictions held. The low share was a flaw in the method, explained below.
 
-## Mirror check: the catalog's copies of Japanese feeds (pre-registered, results pending)
+## Mirror check: the catalog's copies of Japanese feeds (results)
 
 The Mobility Database imports Japan's [GTFS Data Repository](https://gtfs-data.jp/) as entries whose ids start with
 `jbda-`. Each entry points at the repository's download URL, and the catalog keeps its own copy of the latest file
@@ -40,13 +42,41 @@ current file came into force, whether a later file is published, and whether the
 the repository feeds that have no catalog entry. Only zip directories and the calendar files are read, through HTTP
 range requests, with a pause of one second before every request to the repository.
 
-The five predictions, fixed before any file was read ([predictions-m-2026-10-24.md](predictions-m-2026-10-24.md)):
-M1, at least 85% of active entries hold the repository's current file; M2, no entry holds a later file; M3, at least
-90% of the repository's open, active feeds have an entry; M4, at least 75% of entries whose copy has no service left
-have none at the repository either; M5, at most 5% of active entries belong to a feed the repository has
-discontinued or delisted. Why it matters: a timetable published weeks ahead (MV2's
-[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) found a median of 18 days for the feeds that
-do) helps only the users who can see it before it starts.
+As of 2026-10-24 (Japan time), the catalog listed 584 `jbda-` GTFS entries (539 `active`, 45 `inactive`). Every one
+downloaded `rid=current`; 580 matched a listed repository feed and 4 a feed the repository no longer lists. Full
+tables: [summary.md](mirror/2026-10-24/summary.md); one row per entry: [mirror.csv](mirror/2026-10-24/mirror.csv).
+
+| | Prediction | Result |
+|---|---|---|
+| M1 | at least 85% of active entries (both files read) hold the repository's current file | 97.8% (525 of 537), held |
+| M2 | no entry holds a later (`next_1`) file, though some feeds have one published | 0 of 20 feeds with a later file, held |
+| M3 | at least 90% of the repository's open, active feeds have an entry | 99.6% (551 of 553), held |
+| M4 | at least 75% of entries whose copy has no service left have none at the repository either | 69.8% (30 of 43), **missed** |
+| M5 | at most 5% of active entries belong to a discontinued or delisted feed | 0.4% (2 of 539), held |
+
+**What held.** The catalog's copy is the repository's current file for all but 12 of 539 active entries, and
+timetables the repository publishes ahead of time do not reach the catalog early. 20 repository feeds had a later file
+already published (a median of 18 days before it starts, as
+[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) also found), and the mirror held none of them: a
+rider taking a Japanese feed from the global catalog sees a new timetable only on its first day, not when the operator
+publishes it. The 12 active entries that were not on the current file were all files the repository had re-published
+within the last day — eight Sanco (Mie Kotsu) feeds whose new `current` was published the same morning the check ran,
+and others only hours old — so the daily mirror had not yet caught up. Among entries holding the current file, the
+mirror was written a median of 0 days after the file took effect (quartiles 0 to 1).
+
+**What missed (M4), and why it is the interesting part.** 43 entries have a mirrored copy with no service left on the
+as-of date. For 30 of them the repository has no file in force either; but for 13 the repository's `current` file is
+still running. For these 13 the catalog's copy has expired while the repository already serves a newer, valid file —
+the mirror is stale, not the source. This is the same lag the second census found between the catalog's status and the
+feeds' own calendars, seen here against the authoritative national repository.
+
+Two open, active repository feeds had no catalog entry at all ([missing.csv](mirror/2026-10-24/missing.csv)):
+`hitachinakacity/Hitachinaka-smileaozorabus` and `hidakavillage/GTFS-Hidakavill_Bus`.
+
+The five predictions were fixed before any file was read
+([predictions-m-2026-10-24.md](predictions-m-2026-10-24.md)). Why it matters: a timetable published weeks ahead helps
+only the users who can see it before it starts, and a catalogued copy that outlives its source shows riders buses that
+no longer run.
 
 ## Second census: results
 
@@ -190,6 +220,8 @@ licences and are not redistributed.
   `predictions-m-2026-10-24.md`: the predictions, each fixed before the run it scores.
 - `world/2026-10-22/`: the first census (active only). `world/2026-10-22-all/`: the second census (active, inactive,
   future). Each has `feeds.csv` (one row per feed), `by_country.csv`, `summary.json` and `summary.md`.
+- `mirror/2026-10-24/`: the mirror check against the GTFS Data Repository: `mirror.csv` (one row per `jbda-` entry),
+  `missing.csv` (repository feeds with no entry), `summary.json` and `summary.md`.
 - `tools/world_expiry.py`: the census (standard library only); `tools/test_world_expiry.py`: tests on made-up zips
   served from memory, with every expected value worked by hand. `tools/world_diff.py` and
   `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
@@ -215,3 +247,5 @@ different counts.
 
 Source data: the Mobility Database by MobilityData (catalog metadata CC0 1.0) and the GTFS Data Repository API v2
 (https://gtfs-data.jp/). Each dataset belongs to its publisher.
+</content>
+</invoke>

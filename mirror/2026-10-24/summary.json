@@ -1,0 +1,101 @@
+{
+ "as_of": "2026-10-24",
+ "catalog_gtfs_rows": 4646,
+ "entries": 584,
+ "by_status": {
+  "active": 539,
+  "inactive": 45
+ },
+ "match_by": {
+  "url": 580,
+  "url_unlisted": 4
+ },
+ "url_form": {
+  "rid=current": 584
+ },
+ "mirror_results": {
+  "ok": 584
+ },
+ "source_results": {
+  "ok": 553,
+  "http_404": 27,
+  "(not read)": 4
+ },
+ "holds": {
+  "current": 541,
+  "next_1": 0,
+  "prev_1": 11,
+  "other": 1,
+  "unread": 31
+ },
+ "holds_active": {
+  "current": 525,
+  "next_1": 0,
+  "prev_1": 11,
+  "other": 1,
+  "unread": 2
+ },
+ "source_listed_no": 4,
+ "source_discontinued": 11,
+ "mirror_expired": 43,
+ "mirror_expired_source_running": 13,
+ "with_later_file": 20,
+ "later_lead_days": {
+  "n": 20,
+  "min": 4,
+  "q1": 10.0,
+  "median": 18.0,
+  "q3": 28.0,
+  "max": 113
+ },
+ "mirror_lag_days": {
+  "n": 541,
+  "min": -295,
+  "q1": 0.0,
+  "median": 0,
+  "q3": 1.0,
+  "max": 175
+ },
+ "stale_days": {
+  "n": 12,
+  "min": 0,
+  "q1": 0.0,
+  "median": 0.0,
+  "q3": 0.0,
+  "max": 1
+ },
+ "coverage": {
+  "in_scope": 553,
+  "with_entry": 551,
+  "missing": 2
+ },
+ "predictions": {
+  "M1": {
+   "text": "Of the catalog entries with status active whose mirror and repository current file are both read, at least 85% hold the same file as the repository's current one.",
+   "value": 0.9777,
+   "held": true
+  },
+  "M2": {
+   "text": "No catalog entry's mirror holds a later file (next_1) of its repository feed, although some of those feeds have a later file already published.",
+   "value": "0 of 20",
+   "held": true
+  },
+  "M3": {
+   "text": "Of the repository's feeds that are not discontinued, carry an open licence (CC BY, CC0 or PDL) and are listed with an end date on or after the as-of date, at least 90% have a jbda- entry in the catalog.",
+   "value": 0.9964,
+   "held": true
+  },
+  "M4": {
+   "text": "Of the catalog entries whose mirror has no service left on the as-of date, at least 75% have no service left at the repository either (no current file running on the as-of date, discontinued, or no longer listed).",
+   "value": 0.6977,
+   "held": false
+  },
+  "M5": {
+   "text": "Of the catalog entries with status active, at most 5% belong to a repository feed that is discontinued or no longer listed.",
+   "value": 0.0037,
+   "held": true
+  }
+ },
+ "generated_at": "2026-10-24T01:14:28Z",
+ "by": "MV2 of Munim, Inc. (made with AI agents working in MV2's name)"
+}
