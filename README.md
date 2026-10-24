@@ -3,12 +3,17 @@
 How many of the world's catalogued public-transport timetables have run out of dates? This repository counts, for
 GTFS Schedule feeds in the [Mobility Database](https://mobilitydatabase.org/) catalog, the last date on which any of
 their services runs, and how many feeds have no service left. Results are broken down by catalog status, country and
-catalog source.
+catalog source. A second tool checks how closely the catalog's copies of Japanese feeds follow the national
+repository they come from.
 
 By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0; results and text CC BY 4.0.
 
 ## Status
 
+- **2026-10-24: mirror check pre-registered.** [predictions-m-2026-10-24.md](predictions-m-2026-10-24.md) fixes five
+  predictions (M1 to M5) on how the catalog's copies of the feeds it imports from Japan's GTFS Data Repository
+  compare with the files the repository serves itself. `tools/mirror_check.py` runs once, after this commit, and
+  its results go to `mirror/<as-of>/`.
 - **2026-10-23: second census (active, inactive and future feeds), `world/2026-10-22-all/`.** 3,615 feeds; 3,502
   read; 698 (19.9%) have no service left, 392 of them for more than a year. All six pre-registered predictions (X1 to
   X6) held. 38 entries have a catalog status that disagrees with their own calendar, for two different reasons
@@ -18,6 +23,30 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
   after 2026-10-30 and compared with `tools/world_diff.py`.
 - **2026-10-23: first census (active feeds only), `world/2026-10-22/`.** 2,800 of 2,880 active feeds read; 24
   expired (0.9%). Three of six predictions held. The low share was a flaw in the method, explained below.
+
+## Mirror check: the catalog's copies of Japanese feeds (pre-registered, results pending)
+
+The Mobility Database imports Japan's [GTFS Data Repository](https://gtfs-data.jp/) as entries whose ids start with
+`jbda-`. Each entry points at the repository's download URL, and the catalog keeps its own copy of the latest file
+(`urls.latest`), which is what users of the catalog download. The repository can serve several files per feed: the
+one in force (`rid=current`), and timetables already published for later dates (`rid=next_1`, ...; `rid=next` gives
+the next file if there is one). The catalog entry we checked by hand downloads `rid=current`, and the catalog's
+[FAQ](https://mobilitydatabase.org/faq) says it checks producer URLs for updates every day at midnight UTC.
+
+`tools/mirror_check.py` compares, for every `jbda-` entry, the catalog's copy with the repository's current file:
+the same `.txt` files with the same CRC-32 and size count as the same file, however the zip was packed. When they
+differ it tries the repository's next and previous files. It also reads each feed's API entry once, to see when the
+current file came into force, whether a later file is published, and whether the feed is discontinued, and it lists
+the repository feeds that have no catalog entry. Only zip directories and the calendar files are read, through HTTP
+range requests, with a pause of one second before every request to the repository.
+
+The five predictions, fixed before any file was read ([predictions-m-2026-10-24.md](predictions-m-2026-10-24.md)):
+M1, at least 85% of active entries hold the repository's current file; M2, no entry holds a later file; M3, at least
+90% of the repository's open, active feeds have an entry; M4, at least 75% of entries whose copy has no service left
+have none at the repository either; M5, at most 5% of active entries belong to a feed the repository has
+discontinued or delisted. Why it matters: a timetable published weeks ahead (MV2's
+[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) found a median of 18 days for the feeds that
+do) helps only the users who can see it before it starts.
 
 ## Second census: results
 
@@ -119,8 +148,9 @@ A rider-facing app that loads an expired timetable shows no buses, or wrong ones
 time (MobilityData's `feed_expiration_date_7_days` and `_30_days` notices). ITS Feed counted the notices for 736 US
 feeds in September 2026 ([article](https://its-feed.com/articles/what-the-gtfs-validator-checks/)). No worldwide,
 country-by-country count was found (searched 2026-10-23), and we found no earlier check of how often the catalog's
-status disagrees with the feeds' own calendars. MV2's sister project
-[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures the same thing in depth for Japan.
+status disagrees with the feeds' own calendars, or of how closely its copies follow a national repository (searched
+2026-10-24). MV2's sister project [gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures
+expiry in depth for Japan.
 
 ## Method
 
@@ -136,6 +166,8 @@ status disagrees with the feeds' own calendars. MV2's sister project
    after more than a year.
 5. `tools/world_diff.py` compares two censuses. It follows the entries whose status disagreed with their calendar in
    the first one and reports whether they agree in the second, plus every status move between the two files.
+6. `tools/mirror_check.py` compares the catalog's copies of `jbda-` feeds with the GTFS Data Repository (above). Its
+   as-of date is the run day in Japan time.
 
 The census publishes only dates and counts derived from each feed. Feed contents stay under their publishers'
 licences and are not redistributed.
@@ -148,29 +180,38 @@ licences and are not redistributed.
 - Countries are the catalog's. Counts are per catalog entry, not per agency or per rider, and a few files are
   catalogued twice.
 - The hand checks cover 10 of the 38 disagreeing entries.
+- The mirror check reads each file once on one day and compares only the repository's current, next and previous
+  files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy, which we have not
+  confirmed with MobilityData.
 
 ## Files
 
-- `predictions-2026-10-23.md`, `predictions-v2-2026-10-23.md`, `predictions-y-2026-10-23.md`: the predictions,
-  each fixed before the census it scores.
+- `predictions-2026-10-23.md`, `predictions-v2-2026-10-23.md`, `predictions-y-2026-10-23.md`,
+  `predictions-m-2026-10-24.md`: the predictions, each fixed before the run it scores.
 - `world/2026-10-22/`: the first census (active only). `world/2026-10-22-all/`: the second census (active, inactive,
   future). Each has `feeds.csv` (one row per feed), `by_country.csv`, `summary.json` and `summary.md`.
 - `tools/world_expiry.py`: the census (standard library only); `tools/test_world_expiry.py`: tests on made-up zips
   served from memory, with every expected value worked by hand. `tools/world_diff.py` and
-  `tools/test_world_diff.py`: the comparison of two censuses. Tools are committed only after their tests pass.
+  `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
+  `tools/test_mirror_check.py`: the mirror check, tested on made-up zips and API answers. Tools are committed only
+  after their tests pass.
 
 ## Reproduce
 
 ```
 python tools/test_world_expiry.py -v
 python tools/test_world_diff.py -v
+python tools/test_mirror_check.py -v
 curl -o feeds_v2.csv https://files.mobilitydatabase.org/feeds_v2.csv
 python tools/world_expiry.py --catalog feeds_v2.csv --statuses active,inactive,future --predictions X --out out/world
 python tools/world_diff.py --before world/2026-10-22-all/feeds.csv --after out/world --predictions Y --out out/diff
+python tools/mirror_check.py --catalog feeds_v2.csv --pause 1.0 --out out/mirror
 ```
 
-Results go to `<out>/<as-of>/`: `feeds.csv` (one row per feed, with its catalog status), `by_country.csv`,
-`summary.json` and `summary.md`. The catalog changes daily, so a later run gives different counts.
+Census results go to `<out>/<as-of>/`: `feeds.csv` (one row per feed, with its catalog status), `by_country.csv`,
+`summary.json` and `summary.md`. The mirror check writes `mirror.csv` (one row per `jbda-` entry), `missing.csv`
+(repository feeds with no entry), `summary.json` and `summary.md`. The catalog changes daily, so a later run gives
+different counts.
 
-Source data: the Mobility Database by MobilityData (catalog metadata CC0 1.0). Each dataset belongs to its
-publisher.
+Source data: the Mobility Database by MobilityData (catalog metadata CC0 1.0) and the GTFS Data Repository API v2
+(https://gtfs-data.jp/). Each dataset belongs to its publisher.
