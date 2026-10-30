@@ -1,0 +1,39 @@
+﻿group,id,country,provider,before_status,before_last_date,before_class,after_status,after_result,after_last_date,after_class,outcome
+active_stuck,mdb-1105,PH,"HM Transport Inc. and Robinsons Malls, Froehlich Tours,RRCG Transport, Lingkod Pinoy Bus Liner, Inc., MetroExpress, Tas ",active,2020-06-30,expired_over_1y,active,ok,2020-06-30,expired_over_1y,disagree
+active_stuck,mdb-1106,PH,"Manila Light Rail Transit Authority, LTFRB, Manila Metro Rail Transit Corporation, MARINA, Philippine National Railways,",active,2020-06-30,expired_over_1y,active,ok,2020-06-30,expired_over_1y,disagree
+active_stuck,mdb-1114,FI,"Finferries, Alandstrafiken, Rosita Oy, JS Ferryway Ltd Oy, Kuljetus-Savolainen Oy, Archipelago Lines Oy, Sundqvist Inves",active,2023-06-02,expired_over_1y,active,ok,2023-06-02,expired_over_1y,disagree
+active_recent,mdb-176,US,Rocky Mountain National Park Shuttles,active,2026-10-20,expired,active,ok,2026-10-20,expired,disagree
+inactive_running,mdb-1830,MX,"Pumabús, Corredores Concesionados, Sistema de Transporte Colectivo Metro, Metrobús, Servicio de Tren Ligero, Ferrocarril",inactive,2026-12-31,ends_within_1y,inactive,ok,2026-12-31,ends_within_1y,disagree
+inactive_running,mdb-1956,GB,Warrington's Own Buses,inactive,2026-10-25,ends_within_30d,inactive,ok,2026-11-01,ends_within_30d,disagree
+active_stuck,mdb-2234,US,Camarillo Area Transit,active,2021-12-31,expired_over_1y,active,ok,2021-12-31,expired_over_1y,disagree
+active_stuck,mdb-2235,US,San Juan Capistrano Free Weekend Trolley,active,2021-12-04,expired_over_1y,active,ok,2021-12-04,expired_over_1y,disagree
+active_stuck,mdb-2236,US,Taft Area Transit,active,2021-12-30,expired_over_1y,active,ok,2021-12-30,expired_over_1y,disagree
+active_stuck,mdb-2238,US,West Berkeley Shuttle,active,2021-12-31,expired_over_1y,active,ok,2021-12-31,expired_over_1y,disagree
+inactive_running,mdb-2666,IT,Azienda Trasporti MIlanesi (ATM),inactive,2026-11-20,ends_within_30d,inactive,ok,2026-11-20,ends_within_30d,disagree
+inactive_running,mdb-2713,ES,AUCORSA (Autobuses de Córdoba S.A.),inactive,2026-11-30,ends_within_1y,inactive,ok,2026-11-30,ends_within_1y,disagree
+inactive_running,mdb-2819,ES,Avanza Grupo (Huesca city bus),inactive,2026-11-25,ends_within_1y,inactive,ok,2026-11-10,ends_within_30d,disagree
+inactive_running,mdb-2838,PT,Guimabus - Transportes de Guimarães,inactive,2026-12-31,ends_within_1y,inactive,ok,2026-12-31,ends_within_1y,disagree
+inactive_running,mdb-2867,IN,Indian Railways,inactive,2027-08-30,ends_within_1y,inactive,ok,2027-08-30,ends_within_1y,disagree
+inactive_running,mdb-3149,US,Shore Transit,inactive,2027-05-28,ends_within_1y,inactive,ok,2027-05-28,ends_within_1y,disagree
+active_recent,mdb-3211,US,Rocky Mountain National Park,active,2026-10-20,expired,active,ok,2026-10-20,expired,disagree
+inactive_running,mdb-3226,RU,Московский транспорт - Moscow Transport,inactive,2030-12-31,ends_after_2y,inactive,ok,2030-12-31,ends_after_2y,disagree
+active_stuck,mdb-3459,EG,Port Said Transit,active,2025-12-31,expired,active,ok,2025-12-31,expired,disagree
+active_recent,mdb-3470,FR,Marne Bois Bateau Bus,active,2026-10-18,expired,active,ok,2026-10-18,expired,disagree
+inactive_running,mdb-420,US,Martha's Vineyard Transit Authority,inactive,2027-04-15,ends_within_1y,inactive,ok,2027-04-15,ends_within_1y,disagree
+active_stuck,mdb-912,IT,Miccolis S.p.A.,active,2022-12-31,expired_over_1y,active,ok,2022-12-31,expired_over_1y,disagree
+active_stuck,ntd-50282,US,Kalkaska Public Transit Authority,active,2025-12-31,expired,active,ok,2025-12-31,expired,disagree
+inactive_running,tdg-81996,FR,Corsica Ferries,inactive,2026-12-30,ends_within_1y,inactive,ok,2026-12-30,ends_within_1y,disagree
+inactive_running,tdg-8201,FR,Zenbus,inactive,2026-12-31,ends_within_1y,inactive,ok,2026-12-31,ends_within_1y,disagree
+inactive_running,tdg-82148,FR,Valence Romans Mobilités,inactive,2027-06-26,ends_within_1y,inactive,ok,2027-06-26,ends_within_1y,disagree
+active_stuck,tdg-82289,FR,Martinique Transport,active,2026-07-04,expired,active,ok,2026-07-04,expired,disagree
+active_recent,tdg-83969,FR,Challans Gois Communauté,active,2026-09-30,expired,active,ok,2026-09-30,expired,disagree
+active_recent,tdg-84018,FR,Angers Loire Métropole,active,2026-09-27,expired,active,ok,2026-09-27,expired,disagree
+inactive_running,tdg-84068,FR,Régie de transport Communauté de communes Spelunca-Liamone,inactive,2027-04-01,ends_within_1y,inactive,ok,2027-04-01,ends_within_1y,disagree
+active_stuck,tld-4310,SA,İzdeniz,active,2025-10-26,expired,active,ok,2025-10-26,expired_over_1y,disagree
+active_stuck,tld-4684,CA,PC Connect Transit System,active,2023-06-30,expired_over_1y,active,ok,2023-06-30,expired_over_1y,disagree
+active_stuck,tld-4798,US,"Eureka Transit Service, Blue Lake Rancheria Transit System, Samoa Transit System, Redwood Transit System, Arcata & Mad R",active,2024-01-01,expired_over_1y,active,ok,2024-01-01,expired_over_1y,disagree
+active_stuck,tld-5769,US,Kanawha Valley Regional Transportation Authority,active,2024-06-21,expired_over_1y,active,ok,2024-06-21,expired_over_1y,disagree
+active_stuck,tld-6756,CA,Gabriola Community Shuttle,active,2025-09-30,expired_over_1y,active,ok,2025-09-30,expired_over_1y,disagree
+active_stuck,tld-7825,PT,RMTEJO II - Transportes Rodoviários de Passageiros,active,2025-12-31,expired,active,ok,2025-12-31,expired,disagree
+active_stuck,tld-7876,PT,RDL RODOVIÁRIA DO LIS II,active,2025-12-31,expired,active,ok,2025-12-31,expired,disagree
+active_stuck,tld-7877,PT,RDL RODOVIÁRIA DO LIS,active,2025-12-31,expired,active,ok,2025-12-31,expired,disagree

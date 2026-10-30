@@ -1,0 +1,79 @@
+{
+ "before": "data/before.csv",
+ "after": "/out/world/2026-10-29/feeds.csv",
+ "before_feeds": 3615,
+ "after_feeds": 3615,
+ "new_in_after": 0,
+ "groups_before": {
+  "inactive_running": 14,
+  "active_stuck": 19,
+  "active_recent": 5
+ },
+ "groups_after": {
+  "inactive_running": 18,
+  "active_stuck": 21,
+  "active_recent": 9
+ },
+ "outcomes": {
+  "inactive_running": {
+   "feeds": 14,
+   "agree": 0,
+   "disagree": 14,
+   "unread": 0,
+   "gone": 0
+  },
+  "active_stuck": {
+   "feeds": 19,
+   "agree": 0,
+   "disagree": 19,
+   "unread": 0,
+   "gone": 0
+  },
+  "active_recent": {
+   "feeds": 5,
+   "agree": 0,
+   "disagree": 5,
+   "unread": 0,
+   "gone": 0
+  }
+ },
+ "status_moves": {
+  "active>active": 2880,
+  "inactive>inactive": 721,
+  "future>future": 14
+ },
+ "predictions": {
+  "Y1": {
+   "text": "Of the inactive_running feeds, at least 60% have a catalog status that agrees with their own calendar in the second census (the status catches up within about a week).",
+   "value": 0.0,
+   "held": false
+  },
+  "Y2": {
+   "text": "Of the active_stuck feeds (active, no service left for 30 days or more), at least 80% still disagree in the second census (they are not updated within a week).",
+   "value": 1.0,
+   "held": true
+  },
+  "Y3": {
+   "text": "All six hand-checked active entries with no service date range on their catalog page (mdb-2234, tld-5769, mdb-912, mdb-3470, tdg-83969, tdg-84018) that are read in the second census still disagree.",
+   "value": "6 of 6",
+   "held": true
+  },
+  "Y4": {
+   "text": "Both entries of the hand-checked seasonal feed whose range ended on 2026-10-20 (mdb-176, mdb-3211) that are read in the second census agree there.",
+   "value": "0 of 2",
+   "held": false
+  },
+  "Y5": {
+   "text": "In the second census, between 15 and 40 active entries have no service left (the stuck entries persist).",
+   "value": 30,
+   "held": true
+  },
+  "Y6": {
+   "text": "In the second census, between 3 and 40 inactive entries still have service left (the lag recurs).",
+   "value": 18,
+   "held": true
+  }
+ },
+ "generated_at": "2026-10-30T01:26:48Z",
+ "by": "MV2 of Munim, Inc. (made with AI agents working in MV2's name)"
+}

@@ -11,6 +11,15 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 
 ## Status
 
+- **2026-10-30: follow-up census run, `world/2026-10-29/` and `diff/2026-10-29/` (v0.4.2).** Four of six
+  pre-registered predictions (Y1 to Y6) held. The two misses share one cause: between reads of the catalog file on
+  2026-10-23 and 2026-10-30, **not one of the 3,615 GTFS entries changed status**, although the datasets behind
+  them kept changing. 48 entries now disagree with their own calendars, up from 38. Scoring:
+  [diff/2026-10-29/score.md](diff/2026-10-29/score.md).
+- **2026-10-30: correction of prior art.** The 2026-10-23 write-up said we found no earlier report of catalog statuses
+  disagreeing with calendars. For datasets with no service date range, MobilityData already tracks the cause in
+  [mobility-feed-api#1209](https://github.com/MobilityData/mobility-feed-api/issues/1209) (since 2025-05-22; fix in
+  [#1826](https://github.com/MobilityData/mobility-feed-api/pull/1826), open). Our search missed it.
 - **2026-10-24: all 17 stale copies checked by hand (v0.4.1).** Every catalog page shows the producer host we read,
   a latest stored download on the day we recorded, and no download error. The last downloads range from 2024-09-02 to
   2026-07-08. For 12 of the 17 the evidence that downloads stopped while the producer kept publishing is strong; for
@@ -44,6 +53,36 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
   after 2026-10-30 and compared with `tools/world_diff.py`.
 - **2026-10-23: first census (active feeds only), `world/2026-10-22/`.** 2,800 of 2,880 active feeds read; 24
   expired (0.9%). Three of six predictions held. The low share was a flaw in the method, explained below.
+
+## Follow-up census: did the catalog status catch up? (results)
+
+On 2026-10-30 (as-of date 2026-10-29) the census was run again with the same tool and settings, and
+`tools/world_diff.py` followed the 38 entries whose status disagreed with their own calendar on 2026-10-22. Full
+tables: [diff.md](diff/2026-10-29/diff.md), [transitions.csv](diff/2026-10-29/transitions.csv) and the new census in
+[world/2026-10-29/](world/2026-10-29/summary.md).
+
+| | Prediction ([fixed 2026-10-23](predictions-y-2026-10-23.md)) | Result |
+|---|---|---|
+| Y1 | at least 60% of the 14 inactive entries with service left agree a week later | 0 of 14, **missed** |
+| Y2 | at least 80% of the 19 active entries with no service for 30+ days still disagree | 19 of 19, held |
+| Y3 | all six hand-checked entries with no service date range still disagree | 6 of 6, held |
+| Y4 | the seasonal `mdb-176` and `mdb-3211` (range ended 2026-10-20) agree | 0 of 2, **missed** |
+| Y5 | 15 to 40 active entries have no service left | 30, held |
+| Y6 | 3 to 40 inactive entries still have service left | 18, held |
+
+**No status changed in a week.** Between the two reads of `feeds_v2.csv` (2026-10-23 21:16 UTC and 2026-10-30
+01:13 UTC), all 3,615 GTFS entries kept their status: 2,880 `active`, 721 `inactive`, 14 `future`. The datasets
+behind them did change: `mdb-1956`, a file replaced every week, now runs to 2026-11-01 and is still `inactive`;
+`mdb-176` and `mdb-3211`, whose range ended 2026-10-20, are still `active`. The status function
+([feed_status.py](https://github.com/MobilityData/mobility-feed-api/blob/main/functions-python/helpers/feed_status.py))
+is started by an HTTP request, and a daily run was requested in
+[mobility-feed-api#879](https://github.com/MobilityData/mobility-feed-api/issues/879). From outside we cannot tell
+whether it did not run in this week or its results did not reach the CSV export. Y1 and Y4 assumed it ran, and both
+missed for that reason. Disagreeing entries rose from 38 to 48 (18 inactive with service left, 21 active with none for
+30 days or more, 9 active with none for less). Details: [score.md](diff/2026-10-29/score.md).
+
+The census predictions X1 to X6, re-scored by the tool on the new data, all hold again (700 of 3,503 entries read
+have no service left, 20.0%). That is reported, not a new test.
 
 ## Source check: the catalog's copy against the producer's own file (results)
 
@@ -235,7 +274,9 @@ their latest dataset ("–"): `mdb-2234` (Camarillo Area Transit, US, calendar e
 (Kanawha Valley Regional Transportation Authority, US, 2024-06-21), `mdb-912` (Miccolis, IT, 2022-12-31), `mdb-3470`
 (Marne Bois Bateau Bus, FR, 2026-10-18), `tdg-83969` (Réseau urbain Yolé, FR, 2026-09-30) and `tdg-84018` (Bacs
 Ecouflant/Cantenay-Epinard et Pruillé, FR, 2026-09-27). The status job only looks at datasets that have both ends of
-the range, so these entries stay `active` however long ago their service ended. The 7th, `mdb-176` (Rocky Mountain
+the range, so these entries stay `active` however long ago their service ended. This is a known issue:
+[mobility-feed-api#1209](https://github.com/MobilityData/mobility-feed-api/issues/1209), with a fix proposed in
+[#1826](https://github.com/MobilityData/mobility-feed-api/pull/1826). The 7th, `mdb-176` (Rocky Mountain
 National Park shuttles, seasonal), has a range ending 2026-10-20 and had simply not been updated yet.
 
 **Inactive, but service left (14 entries): a status that had not caught up with a new dataset.** All three we checked
@@ -243,8 +284,8 @@ had received a new dataset shortly before the catalog file was read, and their p
 the new range, while `feeds_v2.csv` still listed them as `inactive`: `mdb-3149` (Shore Transit, US; new dataset
 downloaded 2026-10-20, service 2026-09-07 to 2027-05-28), `mdb-1956` (Warrington's Own Buses, GB; a file replaced
 every week, new dataset 2026-10-20 after the previous one ended 2026-10-18) and `tdg-82148` (Réseau urbain Citéa, FR;
-new dataset 2026-10-23). We do not know how often the catalog file is exported or the status job runs, so the
-length of this lag is not measured yet. The follow-up census is meant to measure it.
+new dataset 2026-10-23). The follow-up census (above) found that none of the 14 had caught up a week later, because no
+status in the file changed at all in that week.
 
 What this means for users of the catalog: filtering on `status = active` keeps a small number of long-dead feeds
 (those with no recorded range) and drops a few live ones (recently renewed, or stale copies, above). Reading the
@@ -286,11 +327,12 @@ year, 17.8% end on 12-31 and 12.9% on 03-31. In Japan, 51.4% end on 03-31, the e
 A rider-facing app that loads an expired timetable shows no buses, or wrong ones. Validators flag this one feed at a
 time (MobilityData's `feed_expiration_date_7_days` and `_30_days` notices). ITS Feed counted the notices for 736 US
 feeds in September 2026 ([article](https://its-feed.com/articles/what-the-gtfs-validator-checks/)). No worldwide,
-country-by-country count was found (searched 2026-10-23), and we found no earlier check of how often the catalog's
-status disagrees with the feeds' own calendars, of how closely its copies follow a national repository, or of how
-many of its expired copies have a live file at the producer (searched 2026-10-24; MobilityData's issues discuss
-single feeds). MV2's sister project [gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures
-expiry in depth for Japan.
+country-by-country count was found (searched 2026-10-23). MobilityData tracks why feeds without a service date range
+keep an `active` status ([mobility-feed-api#1209](https://github.com/MobilityData/mobility-feed-api/issues/1209); our
+2026-10-23 search missed it). We found no earlier count of how many entries disagree with their calendars, no check of
+how closely the catalog's copies follow a national repository, and none of how many of its expired copies have a live
+file at the producer (searched 2026-10-24; MobilityData's issues discuss single feeds). MV2's sister project
+[gtfs-jp-lapses](https://github.com/munimtechnologies/gtfs-jp-lapses) measures expiry in depth for Japan.
 
 ## Method
 
@@ -321,7 +363,9 @@ licences and are not redistributed.
   each calendar range. Services whose last 62 days are all removed are counted in `tail_cut`, not guessed.
 - Countries are the catalog's. Counts are per catalog entry, not per agency or per rider, and a few files are
   catalogued twice.
-- The hand checks cover 10 of the 38 disagreeing entries.
+- The hand checks cover 10 of the 38 entries that disagreed on 2026-10-22, and none of the 10 new ones in the
+  follow-up. The follow-up compares two reads of the catalog file about six days apart; it cannot say how long
+  statuses had been unchanged before the first.
 - The mirror check reads each file once on one day and compares only the repository's current, next and previous
   files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy. Its "running" test uses
   the repository's listed dates, not the file's calendar.
@@ -338,7 +382,10 @@ licences and are not redistributed.
   `predictions-m-2026-10-24.md`, `predictions-s-2026-10-24.md`, `predictions-t-2026-10-24.md`: the predictions,
   each fixed before the run it scores.
 - `world/2026-10-22/`: the first census (active only). `world/2026-10-22-all/`: the second census (active, inactive,
-  future). Each has `feeds.csv` (one row per feed), `by_country.csv`, `summary.json` and `summary.md`.
+  future). `world/2026-10-29/`: the follow-up census, same settings. Each has `feeds.csv` (one row per feed),
+  `by_country.csv`, `summary.json` and `summary.md`.
+- `diff/2026-10-29/`: the comparison of the second and follow-up censuses: `diff.md`, `diff.json`,
+  `transitions.csv` (one row for each of the 38 entries followed, before and after) and `score.md` (Y1 to Y6).
 - `mirror/2026-10-24/`: the mirror check against the GTFS Data Repository: `mirror.csv` (one row per `jbda-` entry),
   `missing.csv` (repository feeds with no entry), `summary.json` and `summary.md`.
 - `source/2026-10-23/`: the source check against producers' own files: `sources.csv` (one row per entry, with the
