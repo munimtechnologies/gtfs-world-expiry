@@ -1,0 +1,21 @@
+﻿id,kind,fate,country,provider,status,verdict,mirror_modified_before,mirror_modified,mirror_last,producer_modified,producer_last,days_waiting,in_window
+mdb-1017,stale_before,still_stale,ES,Metro de Málaga,inactive,differs_running,2026-05-13,2026-05-13,2026-07-07,2026-10-07,2026-11-19,,1
+mdb-1053,stale_before,still_stale,US,Loudoun County Transit,inactive,differs_running,2026-04-21,2026-04-21,2026-09-26,,2027-03-27,,1
+mdb-1189,stale_before,still_stale,US,Blacksburg Transit,inactive,differs_running,2026-05-10,2026-05-10,2026-07-31,2026-10-05,2026-12-30,,1
+mdb-1290,stale_before,no_new_copy_other,PL,PKP Szybka Kolej Miejska (SKM),inactive,producer_unreadable,2026-06-18,2026-06-18,2026-08-29,,,,1
+mdb-1304,stale_before,still_stale,US,Kitsap Transit,inactive,differs_running,2026-05-20,2026-05-20,2026-09-12,2026-09-10,2026-12-05,,1
+mdb-148,stale_before,still_stale,US,Sun Metro,inactive,differs_running,2026-05-28,2026-05-28,2026-06-13,2026-10-12,2027-01-30,,1
+mdb-190,stale_before,still_stale,US,Metro St. Louis,inactive,differs_running,2026-05-29,2026-05-29,2026-06-14,2026-10-31,2026-11-29,,1
+mdb-1903,stale_before,still_stale,HU,V-BUSZ KFT,inactive,differs_running,2026-06-04,2026-06-04,2026-08-31,2026-09-29,2026-10-31,,1
+mdb-2127,stale_before,still_stale,US,Milwaukee County Transit System (MCTS),inactive,differs_running,2025-05-08,2025-05-08,2025-08-23,2026-07-22,2026-12-05,,0
+mdb-2610,stale_before,still_stale,IT,AMT Genova,inactive,differs_running,2025-09-08,2025-09-08,2025-09-15,2026-10-25,2026-11-02,,0
+mdb-368,stale_before,still_stale,US,Metropolitan Atlanta Rapid Transit Authority (MARTA),inactive,differs_running,2026-04-19,2026-04-19,2026-08-21,2026-08-18,2026-12-11,,1
+mdb-683,stale_before,still_stale,AU,Department of Transport - Public Transport,inactive,differs_running,2024-09-02,2024-09-02,2025-01-30,,2027-02-06,,0
+mdb-866,stale_before,still_stale,FI,Tampereen joukkoliikenne (JOLI),inactive,differs_running,2026-05-13,2026-05-13,2026-08-04,2026-10-23,2027-06-06,,1
+mdb-887,stale_before,still_stale,HU,Szegedi Közlekedési Társaság,inactive,differs_running,2026-07-08,2026-07-08,2026-10-05,,2026-12-31,,0
+tdg-79499,stale_before,still_stale,FR,Communauté d'Agglomération Royan Atlantique,inactive,differs_running,2026-03-11,2026-03-11,2026-07-07,2026-08-24,2027-07-06,,0
+tld-4135,stale_before,still_stale,US,High Point Transit,inactive,differs_running,2025-08-26,2025-08-26,2026-06-30,,2026-12-31,,0
+tld-7921,stale_before,still_stale,CA,Hinton Transit,inactive,differs_running,2025-03-03,2025-03-03,2022-01-01,,2030-01-01,,0
+ntd-60118,stale_new,,US,City of Edmond,inactive,differs_running,,2024-12-09,2025-12-31,,2027-12-31,,0
+mdb-96,stalled_live,,US,Metrolink,active,differs_running,,2026-05-23,2027-12-31,2026-10-05,2027-12-31,25,1
+tld-767,stalled_live,,ES,Guaguas Municipales,active,differs_running,,2025-12-18,2035-01-30,2026-09-16,2035-01-30,44,0

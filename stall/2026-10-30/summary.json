@@ -1,0 +1,65 @@
+{
+ "as_of": "2026-10-30",
+ "min_days": 3,
+ "window": [
+  "2026-04-19",
+  "2026-06-18"
+ ],
+ "stale_before": {
+  "n": 17,
+  "fates": {
+   "still_stale": 16,
+   "no_new_copy_other": 1,
+   "renewed": 0,
+   "gone": 0
+  }
+ },
+ "live_read": 2476,
+ "stalled": 2,
+ "stalled_days_waiting": {
+  "n": 2,
+  "min": 25,
+  "q1": 29.75,
+  "median": 34.5,
+  "q3": 39.25,
+  "max": 44
+ },
+ "stalled_by_country": {
+  "US": 1,
+  "ES": 1
+ },
+ "window_counts": {
+  "stalled_in_window": 1,
+  "stalled": 2,
+  "others_in_window": 145,
+  "others": 2474
+ },
+ "stale_after": {
+  "n": 17,
+  "new": 1
+ },
+ "predictions": {
+  "T1": {
+   "text": "Of the earlier stale copies that are still in the catalog with a readable copy, at least 70% have no new copy in the later run: the catalog has stored no newer file (the copy's Last-Modified day and last service day are both unchanged).",
+   "value": 1.0,
+   "held": true
+  },
+  "T2": {
+   "text": "Of the entries whose copy still runs and whose producer file is read with service dates, between 0.1% and 2.0% have a stalled download.",
+   "value": 0.0008,
+   "held": false
+  },
+  "T3": {
+   "text": "Predictions S2, S3 and S4 of the source check hold again in the later run.",
+   "value": "S2 held, S3 held, S4 held",
+   "held": true
+  },
+  "T4": {
+   "text": "Among the entries with a stalled download, the catalog stored the copy between 2026-04-19 and 2026-06-18 more often than among the other entries whose copy still runs and whose producer file is read (one-sided Fisher exact p < 0.05; not tested with fewer than 5 stalled downloads).",
+   "value": null,
+   "held": null
+  }
+ },
+ "generated_at": "2026-10-31T07:44:56Z",
+ "by": "MV2 of Munim, Inc. (made with AI agents working in MV2's name)"
+}

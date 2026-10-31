@@ -11,6 +11,15 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 
 ## Status
 
+- **2026-10-31: stall check run, `source/2026-10-30/` and `stall/2026-10-30/` (v0.5.0).** Every live entry was
+  compared with its producer's file this time. Two of the three pre-registered predictions that could be tested held
+  (T1, T3); T2 missed low and T4 had too few cases to test. **None of the 17 stale copies found a week earlier had
+  been renewed**, and among the 2,476 entries whose copy still runs, only **2 have a stalled download** (0.08%):
+  Metrolink (US) and Guaguas Municipales (Las Palmas, ES). Scoring:
+  [stall/2026-10-30/score.md](stall/2026-10-30/score.md).
+- **2026-10-30: reported to MobilityData.** The week with no status change is filed as
+  [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881) (no reply yet on
+  2026-10-31).
 - **2026-10-30: follow-up census run, `world/2026-10-29/` and `diff/2026-10-29/` (v0.4.2).** Four of six
   pre-registered predictions (Y1 to Y6) held. The two misses share one cause: between reads of the catalog file on
   2026-10-23 and 2026-10-30, **not one of the 3,615 GTFS entries changed status**, although the datasets behind
@@ -54,6 +63,39 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 - **2026-10-23: first census (active feeds only), `world/2026-10-22/`.** 2,800 of 2,880 active feeds read; 24
   expired (0.9%). Three of six predictions held. The low share was a flaw in the method, explained below.
 
+## Stall check: a week later, and every live entry (results)
+
+On 2026-10-31 (as-of date 2026-10-30) `tools/source_check.py` ran again with the same settings, except that it read
+the producer's file for **every** entry whose copy still runs, not a sample of 300. `tools/stall_check.py` compared it
+with the 2026-10-23 run. A **stalled download** is an entry whose copy still runs while the producer serves a
+different, still-running file that had been up for at least 3 days and is newer than the catalog's copy (by the
+Last-Modified headers). Tables: [stall/2026-10-30/summary.md](stall/2026-10-30/summary.md),
+[stalls.csv](stall/2026-10-30/stalls.csv) and the new source check in
+[source/2026-10-30/](source/2026-10-30/summary.md).
+
+| | Prediction ([fixed 2026-10-24](predictions-t-2026-10-24.md)) | Result |
+|---|---|---|
+| T1 | at least 70% of the earlier stale copies still have no new copy | 100% (none of 17 renewed), held |
+| T2 | 0.1% to 2.0% of live entries read have a stalled download | 2 of 2,476 (0.08%), **missed** (low) |
+| T3 | S2, S3 and S4 hold again | all three held (S4 now on all live entries: 92.7%) |
+| T4 | stalled downloads were stored in 2026-04-19 to 2026-06-18 more often than other live entries | not tested: fewer than 5 cases, as set out in advance |
+
+**Stale copies stay stale.** None of the 17 entries whose copy had run out while the producer served a newer
+timetable was renewed in the week. (The 17th, SKM in Poland, has no new copy either; its producer URL could not be read
+this time.) One entry newly qualifies: `ntd-60118` (City of Edmond, US), whose only stored dataset dates from
+2024-12-09 and ended 2025-12-31, while the producer's file runs to 2027-12-31.
+
+**Stalled downloads among live entries are rare.** Of 2,476 entries whose copy still runs and whose producer file
+could be read, 2 have a stalled download: `mdb-96` (Metrolink, US; copy stored 2026-05-23, producer's file up since
+2026-10-05) and `tld-767` (Guaguas Municipales, ES; copy stored 2025-12-18, producer's file up since 2026-09-16). In
+both, the copy and the producer's file end on the same day, so no service is missing today, only whatever changed
+inside the file. 180 live entries (7.3%) have a producer file that differs from the copy and still runs; the other 178
+are too new to count, not newer than the copy, or undated. We checked four entries by hand on their catalog pages
+([score.md](stall/2026-10-30/score.md)); all agree with the run.
+
+What it means: when the catalog's downloads of a feed stop, that shows up mostly after the copy has run out, and it
+does not fix itself within a week. The entries that need a look are the 17 stale copies, not the live catalog at large.
+
 ## Follow-up census: did the catalog status catch up? (results)
 
 On 2026-10-30 (as-of date 2026-10-29) the census was run again with the same tool and settings, and
@@ -79,7 +121,8 @@ is started by an HTTP request, and a daily run was requested in
 [mobility-feed-api#879](https://github.com/MobilityData/mobility-feed-api/issues/879). From outside we cannot tell
 whether it did not run in this week or its results did not reach the CSV export. Y1 and Y4 assumed it ran, and both
 missed for that reason. Disagreeing entries rose from 38 to 48 (18 inactive with service left, 21 active with none for
-30 days or more, 9 active with none for less). Details: [score.md](diff/2026-10-29/score.md).
+30 days or more, 9 active with none for less). Details: [score.md](diff/2026-10-29/score.md). We reported this to
+MobilityData in [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881).
 
 The census predictions X1 to X6, re-scored by the tool on the new data, all hold again (700 of 3,503 entries read
 have no service left, 20.0%). That is reported, not a new test.
@@ -352,6 +395,8 @@ file at the producer (searched 2026-10-24; MobilityData's issues discuss single 
    as-of date is the run day in Japan time.
 7. `tools/source_check.py` compares the catalog's copies with the producers' own files worldwide (above). Its as-of
    date is the census's.
+8. `tools/stall_check.py` compares two source-check runs: what became of the earlier stale copies, and which live
+   entries have a stalled download.
 
 The census publishes only dates and counts derived from each feed. Feed contents stay under their publishers'
 licences and are not redistributed.
@@ -375,6 +420,8 @@ licences and are not redistributed.
   runs is not counted. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy; for all 17
   stale copies, checked by hand, that matched the latest download on the catalog page. The hand checks compare the
   producer's host, not the full URL, and the catalog pages list at most ten downloads.
+- The stall check counts a live entry as stalled only when the producer sends a Last-Modified header, so it can only
+  undercount. It compares two runs a week apart.
 
 ## Files
 
@@ -390,6 +437,10 @@ licences and are not redistributed.
   `missing.csv` (repository feeds with no entry), `summary.json` and `summary.md`.
 - `source/2026-10-23/`: the source check against producers' own files: `sources.csv` (one row per entry, with the
   verdict for the 998 entries checked), `summary.json`, `summary.md` and `hand-checks.md` (all 17 stale copies).
+- `source/2026-10-30/`: the second source check, with every live entry read: `sources.csv`, `summary.json`,
+  `summary.md`.
+- `stall/2026-10-30/`: the comparison of the two source checks: `stalls.csv`, `summary.json`, `summary.md` and
+  `score.md` (T1 to T4, with hand checks).
 - `tools/world_expiry.py`: the census (standard library only); `tools/test_world_expiry.py`: tests on made-up zips
   served from memory, with every expected value worked by hand. `tools/world_diff.py` and
   `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
@@ -411,6 +462,8 @@ python tools/world_expiry.py --catalog feeds_v2.csv --statuses active,inactive,f
 python tools/world_diff.py --before world/2026-10-22-all/feeds.csv --after out/world --predictions Y --out out/diff
 python tools/mirror_check.py --catalog feeds_v2.csv --pause 1.0 --out out/mirror
 python tools/source_check.py --catalog feeds_v2.csv --control 300 --seed 20261024 --out out/source
+python tools/source_check.py --catalog feeds_v2.csv --control 99999 --seed 20261024 --workers 4 --pause 0.25 --host-pause 1.0 --out out/source
+python tools/stall_check.py --before source/2026-10-23/sources.csv --after out/source/<as-of>/sources.csv --as-of <as-of> --out out/stall
 ```
 
 Census results go to `<out>/<as-of>/`: `feeds.csv` (one row per feed, with its catalog status), `by_country.csv`,
