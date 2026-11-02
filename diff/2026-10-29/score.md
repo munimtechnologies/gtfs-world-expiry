@@ -20,29 +20,43 @@ are the tool's own ([diff.md](diff.md)); none was changed by hand.
 
 Every entry followed was still in the catalog file and was read in both censuses; none left the file.
 
-## What the misses show: no status changed at all
+## Correction (2026-11-02): the cause given below for Y1 and Y4 was wrong
+
+We reported the unchanged statuses to MobilityData as
+[mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881). A maintainer answered and
+closed it on 2026-11-02. Feed statuses are refreshed every day at 04:00 UTC, but `feeds_v2.csv` is exported only on
+Tuesdays and Fridays at 04:00 UTC, so the file can be up to four days behind the database. Our two reads got the
+exports of 2026-10-23 and 2026-10-27, not two files six days apart. The 2026-10-30 export shows the statuses we
+expected for the four entries we named: `mdb-176` and `mdb-3211` are `inactive`, and `mdb-1956` and `mdb-3149`
+are `active`.
+
+So the section below over-reads one comparison. It says the status column "did not move" for a week and suggests the
+status job may not have run. That is not supported. We compared two exports four days apart, and by the next
+export the named statuses had caught up. We did not know the export schedule and did not check it before writing. The
+verdicts stand as recorded, since the tool scored what the file showed. Y1 and Y4 assumed our two reads were a week apart in
+the catalog's data. They were four days apart, in exports that may lag the database. A re-read of the current file against our 2026-10-30 read
+(`tools/export_check.py`) will count how many statuses have moved since. Its result will be published under `export/`.
+
+## What the misses show: no status changed between the two reads (see the correction above)
 
 The predictions assumed the catalog's status job runs often, so that a status out of step with a new or ended
-dataset would catch up within a week. It did not, for any entry. Between the two reads of `feeds_v2.csv`, about six
-days apart, **not one of the 3,615 GTFS entries changed status**: 2,880 stayed `active`, 721 `inactive` and 14
+dataset would catch up within a week. In the two files we read it had not, for any entry. Between the two reads of
+`feeds_v2.csv` **not one of the 3,615 GTFS entries changed status**: 2,880 stayed `active`, 721 `inactive` and 14
 `future`. The datasets behind them did change. Among the 38 entries followed, `mdb-1956` (Warrington's Own Buses, a
 file replaced every week) now has a latest dataset that runs to 2026-11-01 instead of 2026-10-25, and still shows
 `inactive`; `mdb-2819`'s latest dataset changed too. `mdb-176` and `mdb-3211`, whose catalog page showed a service
-date range ending 2026-10-20 when we checked it on 2026-10-23, were still `active` on 2026-10-30.
+date range ending 2026-10-20 when we checked it on 2026-10-23, were still `active` in the file read on 2026-10-30.
 
-So Y1 and Y4 failed for one shared reason: between 2026-10-23 and 2026-10-30, the status column of `feeds_v2.csv`
-did not move. The disagreements grew instead. In the second census 38 entries disagreed with their own calendars;
-in the follow-up 48 do (18 inactive with service left, 21 active with none for 30 days or more, 9 active with none
-for less).
+So Y1 and Y4 failed for one shared reason: between our two reads, the status column of `feeds_v2.csv` did not move.
+The disagreements grew instead. In the second census 38 entries disagreed with their own calendars; in the follow-up
+48 do (18 inactive with service left, 21 active with none for 30 days or more, 9 active with none for less).
 
-How the status is meant to be set: the Mobility Database's `update_feed_status` function
+How the status is set: the Mobility Database's `update_feed_status` function
 ([feed_status.py](https://github.com/MobilityData/mobility-feed-api/blob/main/functions-python/helpers/feed_status.py))
-sets each feed from the service date range of its latest dataset. It is started by an HTTP request, and
-[mobility-feed-api#879](https://github.com/MobilityData/mobility-feed-api/issues/879) (closed 2025-03-06) asked for
-it to run daily. The CSV export (`functions-python/export_csv`) writes each feed's stored status. Neither file shows
-the schedule. From outside we cannot tell whether the status function did not run in this week or its results did
-not reach the CSV. We only see that the CSV's statuses did not change. A week is one observation. We have not
-measured how long statuses had been frozen before 2026-10-23.
+sets each feed from the service date range of its latest dataset, and MobilityData says it runs daily at 04:00 UTC
+(see the correction). The CSV export (`functions-python/export_csv`) writes each feed's stored status on Tuesdays and
+Fridays. Our earlier text said neither file shows the schedule and that we could not tell whether the status function
+had run. MobilityData's answer settles that.
 
 ## What held
 
@@ -67,4 +81,5 @@ service left, and the US share stays far above Japan's (28.7% against 7.6%). Ful
 Both censuses read the catalog's mirror of each latest dataset, not the producer's URL, and service dates come from
 `calendar.txt` and `calendar_dates.txt` only. Hand checks: 10 of the 38 entries disagreeing on 2026-10-23 were checked
 on their catalog pages; none of the 10 new ones has been checked. Some entries are the same file catalogued twice
-(`mdb-176` and `mdb-3211`).
+(`mdb-176` and `mdb-3211`). `feeds_v2.csv` is exported twice a week, so any status read from it can be up to four
+days old.

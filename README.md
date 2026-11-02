@@ -11,20 +11,29 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 
 ## Status
 
+- **2026-11-02: correction. "No status changed in a week" was a misreading.** MobilityData answered
+  [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881) and closed it. Feed statuses
+  are refreshed daily at 04:00 UTC, but `feeds_v2.csv` is exported only on Tuesdays and Fridays at 04:00 UTC, so it
+  can be up to four days behind. Our two reads got the exports of 2026-10-23 and 2026-10-27, and the 2026-10-30 export
+  shows the expected statuses for the four entries we named. We did not check the export schedule before writing. The
+  Y1 to Y6 verdicts stand as scored, but the cause we gave for the two misses was wrong
+  ([score.md](diff/2026-10-29/score.md#correction-2026-11-02-the-cause-given-below-for-y1-and-y4-was-wrong)). A
+  re-read of the current file (`tools/export_check.py`) will count how many statuses have moved since our read.
 - **2026-10-31: stall check run, `source/2026-10-30/` and `stall/2026-10-30/` (v0.5.0).** Every live entry was
   compared with its producer's file this time. Two of the three pre-registered predictions that could be tested held
   (T1, T3); T2 missed low and T4 had too few cases to test. **None of the 17 stale copies found a week earlier had
   been renewed**, and among the 2,476 entries whose copy still runs, only **2 have a stalled download** (0.08%):
   Metrolink (US) and Guaguas Municipales (Las Palmas, ES). Scoring:
-  [stall/2026-10-30/score.md](stall/2026-10-30/score.md).
-- **2026-10-30: reported to MobilityData.** The week with no status change is filed as
-  [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881) (no reply yet on
-  2026-10-31).
+  [stall/2026-10-30/score.md](stall/2026-10-30/score.md). The 17 stale copies were reported to MobilityData on
+  2026-11-02 as [mobility-feed-api#1883](https://github.com/MobilityData/mobility-feed-api/issues/1883).
+- **2026-10-30: reported to MobilityData** as
+  [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881). Answered and closed on
+  2026-11-02: the unchanged statuses came from the CSV's twice-weekly export (see the correction above).
 - **2026-10-30: follow-up census run, `world/2026-10-29/` and `diff/2026-10-29/` (v0.4.2).** Four of six
-  pre-registered predictions (Y1 to Y6) held. The two misses share one cause: between reads of the catalog file on
-  2026-10-23 and 2026-10-30, **not one of the 3,615 GTFS entries changed status**, although the datasets behind
-  them kept changing. 48 entries now disagree with their own calendars, up from 38. Scoring:
-  [diff/2026-10-29/score.md](diff/2026-10-29/score.md).
+  pre-registered predictions (Y1 to Y6) held. The two misses share one cause: between our two reads of the catalog
+  file, not one of the 3,615 GTFS entries changed status. The reads were the exports of 2026-10-23 and 2026-10-27, not
+  a week of the catalog's data (see the correction above). 48 entries disagree with their own calendars in the second
+  read, up from 38. Scoring: [diff/2026-10-29/score.md](diff/2026-10-29/score.md).
 - **2026-10-30: correction of prior art.** The 2026-10-23 write-up said we found no earlier report of catalog statuses
   disagreeing with calendars. For datasets with no service date range, MobilityData already tracks the cause in
   [mobility-feed-api#1209](https://github.com/MobilityData/mobility-feed-api/issues/1209) (since 2025-05-22; fix in
@@ -112,17 +121,18 @@ tables: [diff.md](diff/2026-10-29/diff.md), [transitions.csv](diff/2026-10-29/tr
 | Y5 | 15 to 40 active entries have no service left | 30, held |
 | Y6 | 3 to 40 inactive entries still have service left | 18, held |
 
-**No status changed in a week.** Between the two reads of `feeds_v2.csv` (2026-10-23 21:16 UTC and 2026-10-30
-01:13 UTC), all 3,615 GTFS entries kept their status: 2,880 `active`, 721 `inactive`, 14 `future`. The datasets
-behind them did change: `mdb-1956`, a file replaced every week, now runs to 2026-11-01 and is still `inactive`;
-`mdb-176` and `mdb-3211`, whose range ended 2026-10-20, are still `active`. The status function
-([feed_status.py](https://github.com/MobilityData/mobility-feed-api/blob/main/functions-python/helpers/feed_status.py))
-is started by an HTTP request, and a daily run was requested in
-[mobility-feed-api#879](https://github.com/MobilityData/mobility-feed-api/issues/879). From outside we cannot tell
-whether it did not run in this week or its results did not reach the CSV export. Y1 and Y4 assumed it ran, and both
-missed for that reason. Disagreeing entries rose from 38 to 48 (18 inactive with service left, 21 active with none for
-30 days or more, 9 active with none for less). Details: [score.md](diff/2026-10-29/score.md). We reported this to
-MobilityData in [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881).
+**No status changed between our two reads, and that was the export schedule (corrected 2026-11-02).** Between the two
+reads of `feeds_v2.csv` (2026-10-23 21:16 UTC and 2026-10-30 01:13 UTC), all 3,615 GTFS entries kept their status:
+2,880 `active`, 721 `inactive`, 14 `future`. The datasets behind them did change: `mdb-1956`, a file replaced every
+week, ran to 2026-11-01 and was still `inactive`; `mdb-176` and `mdb-3211`, whose range ended 2026-10-20, were still
+`active`. Our first write-up read this as a week in which the status job may not have run. MobilityData's answer in
+[mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881) explains it differently:
+statuses are refreshed daily at 04:00 UTC, while `feeds_v2.csv` is exported only on Tuesdays and Fridays at 04:00 UTC.
+Our reads got the exports of 2026-10-23 and 2026-10-27, and in the 2026-10-30 export the four entries named above
+show the expected statuses. Y1 and Y4 assumed a week of the catalog's data between the reads and missed as recorded.
+Disagreeing entries rose from 38 to 48 in our second read (18 inactive with service left, 21 active with none for 30
+days or more, 9 active with none for less); some of those may be export lag too. Details:
+[score.md](diff/2026-10-29/score.md).
 
 The census predictions X1 to X6, re-scored by the tool on the new data, all hold again (700 of 3,503 entries read
 have no service left, 20.0%). That is reported, not a new test.
@@ -327,12 +337,14 @@ had received a new dataset shortly before the catalog file was read, and their p
 the new range, while `feeds_v2.csv` still listed them as `inactive`: `mdb-3149` (Shore Transit, US; new dataset
 downloaded 2026-10-20, service 2026-09-07 to 2027-05-28), `mdb-1956` (Warrington's Own Buses, GB; a file replaced
 every week, new dataset 2026-10-20 after the previous one ended 2026-10-18) and `tdg-82148` (Réseau urbain Citéa, FR;
-new dataset 2026-10-23). The follow-up census (above) found that none of the 14 had caught up a week later, because no
-status in the file changed at all in that week.
+new dataset 2026-10-23). The catalog's own pages were already right. The CSV is exported twice a week, so its status
+can be up to four days old (see the correction in Status). The follow-up census read the 2026-10-27 export, in which
+none of the 14 had caught up; MobilityData says `mdb-3149` and `mdb-1956` are `active` in the 2026-10-30 export.
 
 What this means for users of the catalog: filtering on `status = active` keeps a small number of long-dead feeds
 (those with no recorded range) and drops a few live ones (recently renewed, or stale copies, above). Reading the
-dataset's own calendar avoids the first; only the producer's own file reveals the second.
+dataset's own calendar avoids the first; only the producer's own file reveals the second. A status read from
+`feeds_v2.csv` can also be up to four days behind the catalog itself.
 
 ## First census: results and what went wrong
 
@@ -379,7 +391,8 @@ file at the producer (searched 2026-10-24; MobilityData's issues discuss single 
 
 ## Method
 
-1. Take `feeds_v2.csv` from the Mobility Database (catalog metadata, CC0). Keep the rows with `data_type = gtfs` and
+1. Take `feeds_v2.csv` from the Mobility Database (catalog metadata, CC0). It is exported on Tuesdays and Fridays at
+   04:00 UTC, so its statuses can be up to four days behind the catalog. Keep the rows with `data_type = gtfs` and
    the chosen statuses (`--statuses`, default `active`; the second census uses `active,inactive,future`).
 2. For each one, open the catalog's mirror of its latest dataset (`urls.latest`) with HTTP range requests. Read only
    `calendar.txt`, `calendar_dates.txt` and `feed_info.txt`. A typical feed costs three or four small requests.
@@ -397,6 +410,7 @@ file at the producer (searched 2026-10-24; MobilityData's issues discuss single 
    date is the census's.
 8. `tools/stall_check.py` compares two source-check runs: what became of the earlier stale copies, and which live
    entries have a stalled download.
+9. `tools/export_check.py` re-reads `feeds_v2.csv` and counts the status moves since the follow-up census's read.
 
 The census publishes only dates and counts derived from each feed. Feed contents stay under their publishers'
 licences and are not redistributed.
@@ -404,13 +418,13 @@ licences and are not redistributed.
 ## Limits
 
 - The catalog's mirror can lag a publisher's own URL, and an entry may have been replaced by another.
+- `feeds_v2.csv` is exported twice a week, so a status read from it can be up to four days old.
 - Trips are not checked: a service with no trips still counts. Removed dates are checked only in the last 62 days of
   each calendar range. Services whose last 62 days are all removed are counted in `tail_cut`, not guessed.
 - Countries are the catalog's. Counts are per catalog entry, not per agency or per rider, and a few files are
   catalogued twice.
 - The hand checks cover 10 of the 38 entries that disagreed on 2026-10-22, and none of the 10 new ones in the
-  follow-up. The follow-up compares two reads of the catalog file about six days apart; it cannot say how long
-  statuses had been unchanged before the first.
+  follow-up. The follow-up compares two exports of the catalog file four days apart (2026-10-23 and 2026-10-27).
 - The mirror check reads each file once on one day and compares only the repository's current, next and previous
   files. It takes the mirror's `Last-Modified` header as the day the catalog stored its copy. Its "running" test uses
   the repository's listed dates, not the file's calendar.
@@ -432,7 +446,8 @@ licences and are not redistributed.
   future). `world/2026-10-29/`: the follow-up census, same settings. Each has `feeds.csv` (one row per feed),
   `by_country.csv`, `summary.json` and `summary.md`.
 - `diff/2026-10-29/`: the comparison of the second and follow-up censuses: `diff.md`, `diff.json`,
-  `transitions.csv` (one row for each of the 38 entries followed, before and after) and `score.md` (Y1 to Y6).
+  `transitions.csv` (one row for each of the 38 entries followed, before and after) and `score.md` (Y1 to Y6, with
+  the 2026-11-02 correction).
 - `mirror/2026-10-24/`: the mirror check against the GTFS Data Repository: `mirror.csv` (one row per `jbda-` entry),
   `missing.csv` (repository feeds with no entry), `summary.json` and `summary.md`.
 - `source/2026-10-23/`: the source check against producers' own files: `sources.csv` (one row per entry, with the
@@ -446,7 +461,8 @@ licences and are not redistributed.
   `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
   `tools/test_mirror_check.py`: the mirror check, tested on made-up zips and API answers. `tools/source_check.py` and
   `tools/test_source_check.py`: the comparison with producers' files. `tools/stall_check.py` and
-  `tools/test_stall_check.py`: the follow-up of stale copies and stalled downloads between two source checks. Tools
+  `tools/test_stall_check.py`: the follow-up of stale copies and stalled downloads between two source checks.
+  `tools/export_check.py` and `tools/test_export_check.py`: the status re-read after MobilityData's answer. Tools
   are committed only after their tests pass.
 
 ## Reproduce
@@ -464,6 +480,7 @@ python tools/mirror_check.py --catalog feeds_v2.csv --pause 1.0 --out out/mirror
 python tools/source_check.py --catalog feeds_v2.csv --control 300 --seed 20261024 --out out/source
 python tools/source_check.py --catalog feeds_v2.csv --control 99999 --seed 20261024 --workers 4 --pause 0.25 --host-pause 1.0 --out out/source
 python tools/stall_check.py --before source/2026-10-23/sources.csv --after out/source/<as-of>/sources.csv --as-of <as-of> --out out/stall
+cd tools && python -m unittest -v test_export_check && python export_check.py --out ../out/export
 ```
 
 Census results go to `<out>/<as-of>/`: `feeds.csv` (one row per feed, with its catalog status), `by_country.csv`,
