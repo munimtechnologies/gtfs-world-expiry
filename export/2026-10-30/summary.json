@@ -1,0 +1,41 @@
+{
+ "note": "Output of tools/export_check.py (first version) with the two class-based fields removed (disagreeing_before, of_those_now_agree_with_their_10_29_calendar): that version counted only the class 'expired' as expired, not 'expired_over_1y', so those two numbers were wrong. Fixed 2026-11-04; see summary.md.",
+ "read_at": "2026-11-02T19:32:35Z",
+ "catalog_headers": {
+  "Last-Modified": "Fri, 30 Oct 2026 04:02:52 GMT",
+  "ETag": "\"87b50656c0c4bdbca59a2d915b5db397\"",
+  "Content-Length": "2732227"
+ },
+ "export_day": "2026-10-30",
+ "before": 3615,
+ "after_gtfs": 4652,
+ "missing_after": 0,
+ "status_changed": 45,
+ "moves": {
+  "active->active": 2853,
+  "active->deprecated": 2,
+  "active->future": 17,
+  "active->inactive": 8,
+  "future->active": 6,
+  "future->future": 8,
+  "inactive->active": 12,
+  "inactive->inactive": 709
+ },
+ "named": {
+  "mdb-176": "inactive",
+  "mdb-3211": "inactive",
+  "mdb-3149": "active",
+  "mdb-1956": "active"
+ },
+ "checks": {
+  "C1": "held",
+  "C2": "held"
+ },
+ "changed_ids": [
+  "mdb-100", "mdb-1039", "mdb-1063", "mdb-1080", "mdb-176", "mdb-1956", "mdb-2009", "mdb-2035", "mdb-2067",
+  "mdb-2068", "mdb-2100", "mdb-2101", "mdb-2102", "mdb-2242", "mdb-2315", "mdb-2347", "mdb-2468", "mdb-2666",
+  "mdb-2712", "mdb-2713", "mdb-2772", "mdb-2819", "mdb-3149", "mdb-3211", "mdb-3219", "mdb-3545", "mdb-3548",
+  "mdb-3604", "mdb-373", "mdb-420", "mdb-502", "mdb-503", "mdb-516", "mdb-732", "mdb-751", "tdg-8201", "tdg-82148",
+  "tdg-82291", "tdg-83282", "tdg-83734", "tld-3363", "tld-4669", "tld-4674", "tld-5790", "tld-635"
+ ]
+}

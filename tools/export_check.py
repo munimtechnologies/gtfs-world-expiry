@@ -7,6 +7,11 @@ reported that as mobility-feed-api#1881. MobilityData answered (2026-11-02) that
 but feeds_v2.csv is exported only on Tuesdays and Fridays at 04:00 UTC, so our reads fell on the 2026-10-23 and
 2026-10-27 exports, and that the 2026-10-30 export shows the expected statuses. This script checks that against a
 fresh copy of the file: how many statuses moved since our read, and what the entries named in the answer show now.
+
+Fix (2026-11-04): the census writes the class `expired_over_1y` for feeds whose service ended more than a year ago.
+The first version treated only `expired` as expired, so it counted about 380 long-expired `inactive` feeds as
+disagreeing with their calendar. Any class starting with `expired` now counts as expired. The status moves and the
+checks C1 and C2 never depended on this.
 """
 import argparse
 import csv
@@ -35,9 +40,14 @@ def rows_of(text):
     return list(csv.DictReader(io.StringIO(text)))
 
 
+def is_expired(cls):
+    """The census's classes: expired, expired_over_1y, ends_within_30d, ends_within_1y, ends_1_2y, ends_after_2y."""
+    return cls.startswith("expired")
+
+
 def disagrees(status, cls):
     """The census's own rule: inactive with service left, or active with none."""
-    return (status == "inactive" and cls != "expired") or (status == "active" and cls == "expired")
+    return (status == "inactive" and not is_expired(cls)) or (status == "active" and is_expired(cls))
 
 
 def compare(before_rows, after_rows):
@@ -57,6 +67,7 @@ def compare(before_rows, after_rows):
     return {"before": len(before_rows), "after_gtfs": len(after), "missing_after": len(missing),
             "status_changed": len(changed), "moves": dict(sorted(moves.items())),
             "disagreeing_before": len(dis), "of_those_now_agree_with_their_10_29_calendar": len(now_agree),
+            "now_agree_ids": sorted(now_agree),
             "named": {i: (after[i]["status"] if i in after else None) for i in list(NAMED) + [WEEKLY]},
             "changed_ids": sorted(changed)}
 
@@ -94,21 +105,22 @@ def main():
     os.makedirs(args.out, exist_ok=True)
     with open(os.path.join(args.out, "summary.json"), "w", encoding="utf-8") as f:
         json.dump(res, f, indent=1)
-    lines = ["# feeds_v2.csv re-read against the census read of 2026-10-30", "",
+    lines = ["# feeds_v2.csv re-read against the census read of 2026-10-30 (the 2026-10-27 export)", "",
              "Read %s; file Last-Modified %s." % (read_at, head.get("Last-Modified")), "",
              "Checks: `%s`" % json.dumps(res["checks"]), "",
              "| | count |", "|---|---|",
              "| GTFS entries in our 2026-10-30 read | %d |" % res["before"],
              "| of those, missing from the new file | %d |" % res["missing_after"],
              "| of those, status changed | %d |" % res["status_changed"],
-             "| disagreeing with their own calendar on 2026-10-29 | %d |" % res["disagreeing_before"],
-             "| of those, status now matches that calendar | %d |" % res[
+             "| status disagreeing with the census's class for 2026-10-29 | %d |" % res["disagreeing_before"],
+             "| of those, status now matches that class | %d |" % res[
                  "of_those_now_agree_with_their_10_29_calendar"], "",
              "Status moves: `%s`" % json.dumps(res["moves"]), "",
              "Named entries now: `%s`" % json.dumps(res["named"])]
     with open(os.path.join(args.out, "summary.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
-    print(json.dumps({k: res[k] for k in ("status_changed", "moves", "named", "checks", "export_day")}), flush=True)
+    print(json.dumps({k: res[k] for k in ("status_changed", "moves", "named", "checks", "export_day",
+                                          "disagreeing_before")}), flush=True)
 
 
 if __name__ == "__main__":

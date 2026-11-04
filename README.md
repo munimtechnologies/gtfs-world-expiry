@@ -11,6 +11,14 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
 
 ## Status
 
+- **2026-11-04: export re-read, `export/2026-10-30/`, and a fix to `tools/export_check.py`.** Between the
+  2026-10-27 export of `feeds_v2.csv` (our census read) and the 2026-10-30 export, **45 of the 3,615 GTFS entries
+  changed status** (12 inactive to active, 8 active to inactive, 17 active to future, 6 future to active, 2 active to
+  deprecated), and the three entries MobilityData named in #1881 show the statuses it said (checks C1 and C2 held).
+  This confirms the correction below. The tool's first version also counted entries whose status disagrees with their
+  calendar, and that count (415) was wrong: it missed the census class `expired_over_1y`. We found this before
+  publishing it; the count is left out, the tool is fixed and tested, and the fixed version will be run on a later
+  export ([summary.md](export/2026-10-30/summary.md)).
 - **2026-11-02: correction. "No status changed in a week" was a misreading.** MobilityData answered
   [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881) and closed it. Feed statuses
   are refreshed daily at 04:00 UTC, but `feeds_v2.csv` is exported only on Tuesdays and Fridays at 04:00 UTC, so it
@@ -18,7 +26,7 @@ By MV2 of Munim, Inc. Made with AI agents working in MV2's name. Code Apache-2.0
   shows the expected statuses for the four entries we named. We did not check the export schedule before writing. The
   Y1 to Y6 verdicts stand as scored, but the cause we gave for the two misses was wrong
   ([score.md](diff/2026-10-29/score.md#correction-2026-11-02-the-cause-given-below-for-y1-and-y4-was-wrong)). A
-  re-read of the current file (`tools/export_check.py`) will count how many statuses have moved since our read.
+  re-read of the 2026-10-30 export (2026-11-04 entry above) counted 45 status moves since our read.
 - **2026-10-31: stall check run, `source/2026-10-30/` and `stall/2026-10-30/` (v0.5.0).** Every live entry was
   compared with its producer's file this time. Two of the three pre-registered predictions that could be tested held
   (T1, T3); T2 missed low and T4 had too few cases to test. **None of the 17 stale copies found a week earlier had
@@ -129,9 +137,10 @@ week, ran to 2026-11-01 and was still `inactive`; `mdb-176` and `mdb-3211`, whos
 [mobility-feed-api#1881](https://github.com/MobilityData/mobility-feed-api/issues/1881) explains it differently:
 statuses are refreshed daily at 04:00 UTC, while `feeds_v2.csv` is exported only on Tuesdays and Fridays at 04:00 UTC.
 Our reads got the exports of 2026-10-23 and 2026-10-27, and in the 2026-10-30 export the four entries named above
-show the expected statuses. Y1 and Y4 assumed a week of the catalog's data between the reads and missed as recorded.
-Disagreeing entries rose from 38 to 48 in our second read (18 inactive with service left, 21 active with none for 30
-days or more, 9 active with none for less); some of those may be export lag too. Details:
+show the expected statuses (confirmed by our own re-read, `export/2026-10-30/`: 45 entries changed status between the
+2026-10-27 and 2026-10-30 exports). Y1 and Y4 assumed a week of the catalog's data between the reads and missed as
+recorded. Disagreeing entries rose from 38 to 48 in our second read (18 inactive with service left, 21 active with none
+for 30 days or more, 9 active with none for less); some of those may be export lag too. Details:
 [score.md](diff/2026-10-29/score.md).
 
 The census predictions X1 to X6, re-scored by the tool on the new data, all hold again (700 of 3,503 entries read
@@ -339,7 +348,8 @@ downloaded 2026-10-20, service 2026-09-07 to 2027-05-28), `mdb-1956` (Warrington
 every week, new dataset 2026-10-20 after the previous one ended 2026-10-18) and `tdg-82148` (Réseau urbain Citéa, FR;
 new dataset 2026-10-23). The catalog's own pages were already right. The CSV is exported twice a week, so its status
 can be up to four days old (see the correction in Status). The follow-up census read the 2026-10-27 export, in which
-none of the 14 had caught up; MobilityData says `mdb-3149` and `mdb-1956` are `active` in the 2026-10-30 export.
+none of the 14 had caught up; in the 2026-10-30 export `mdb-3149`, `mdb-1956` and `tdg-82148` are among the 45
+entries whose status changed (`export/2026-10-30/`).
 
 What this means for users of the catalog: filtering on `status = active` keeps a small number of long-dead feeds
 (those with no recorded range) and drops a few live ones (recently renewed, or stale copies, above). Reading the
@@ -401,7 +411,8 @@ file at the producer (searched 2026-10-24; MobilityData's issues discuss single 
    `calendar.txt` range that `calendar_dates.txt` does not remove, or a date added in `calendar_dates.txt`.
 4. A feed is expired when that date is before the as-of date. The as-of date is one day before the UTC run date,
    so it has passed in every time zone. The other classes are: ends within 30 days, ends within a year, and ends
-   after more than a year.
+   after more than a year. (In `feeds.csv` an expired feed whose service ended more than a year ago has the class
+   `expired_over_1y`.)
 5. `tools/world_diff.py` compares two censuses. It follows the entries whose status disagreed with their calendar in
    the first one and reports whether they agree in the second, plus every status move between the two files.
 6. `tools/mirror_check.py` compares the catalog's copies of `jbda-` feeds with the GTFS Data Repository (above). Its
@@ -410,7 +421,8 @@ file at the producer (searched 2026-10-24; MobilityData's issues discuss single 
    date is the census's.
 8. `tools/stall_check.py` compares two source-check runs: what became of the earlier stale copies, and which live
    entries have a stalled download.
-9. `tools/export_check.py` re-reads `feeds_v2.csv` and counts the status moves since the follow-up census's read.
+9. `tools/export_check.py` re-reads `feeds_v2.csv` and counts the status moves since the follow-up census's read
+   (fixed 2026-11-04 to count `expired_over_1y` as expired).
 
 The census publishes only dates and counts derived from each feed. Feed contents stay under their publishers'
 licences and are not redistributed.
@@ -456,6 +468,8 @@ licences and are not redistributed.
   `summary.md`.
 - `stall/2026-10-30/`: the comparison of the two source checks: `stalls.csv`, `summary.json`, `summary.md` and
   `score.md` (T1 to T4, with hand checks).
+- `export/2026-10-30/`: the 2026-10-30 export of `feeds_v2.csv` against our census read: `summary.md` and
+  `summary.json` (status moves and the 45 entries that changed; the class-based count is left out, see Status).
 - `tools/world_expiry.py`: the census (standard library only); `tools/test_world_expiry.py`: tests on made-up zips
   served from memory, with every expected value worked by hand. `tools/world_diff.py` and
   `tools/test_world_diff.py`: the comparison of two censuses. `tools/mirror_check.py` and
