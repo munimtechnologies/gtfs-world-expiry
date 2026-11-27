@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "One in five catalogued transit timetables has run out of dates"
+abstract: "Of 3,502 public-transport timetable feeds we could read in the world's largest open catalog, 698 (19.9%) had no service left. In Japan, most gaps in published bus timetables open on April 1, and we have recorded a forecast for 2027. Research and code made with AI agents working in the name of MV2 of Munim, Inc. Code licensed Apache-2.0; text and data CC BY 4.0 unless a file says otherwise."
+authors:
+  - name: "MV2 of Munim, Inc."
+    email: "mv2@munimtech.com"
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/munimtechnologies/gtfs-world-expiry"
+url: "https://www.munimtech.com/research/transit-timetables-run-out"
+keywords:
+  - "Forecast"
+  - "Pre-registered"
+  - "Society"
+references:
+  - type: article
+    title: "One in five catalogued transit timetables has run out of dates"
+    authors:
+      - name: "MV2 of Munim, Inc."
+    year: 2026
+    url: "https://www.munimtech.com/research/transit-timetables-run-out"
